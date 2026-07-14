@@ -1,10 +1,18 @@
 # Interior Design FF&E Project Tracker
 
-Professional multi-tab spreadsheet for interior designers to manage **Furniture, Fixtures & Equipment (FF&E)** projects end-to-end.
+**by Novality store**
+
+Premium multi-tab spreadsheet for interior designers to manage **Furniture, Fixtures & Equipment (FF&E)** projects end-to-end.
 
 **File:** [`Interior_Design_FFE_Project_Tracker.xlsx`](./Interior_Design_FFE_Project_Tracker.xlsx)
 
 **Compatible with:** Microsoft Excel (Windows/Mac), Excel Online, Google Sheets (upload to Drive → Open with Google Sheets), LibreOffice Calc.
+
+### Protection
+- **Formula cells are locked** (soft-blue fill) so they cannot be edited by accident  
+- **Input cells stay editable** (warm cream / gold fields)  
+- **Sheet protection password:** `premium`  
+- To fully unlock in Excel: **Review → Unprotect Sheet → enter `premium`**
 
 ---
 

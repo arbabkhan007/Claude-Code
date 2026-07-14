@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Interior Design FF&E Project Tracker
-Excel + Google Sheets compatible workbook generator.
+by Novality store
 
-Creates a professional multi-tab spreadsheet for interior designers to manage
-projects, FF&E schedules, budgets, vendors, approvals, deliveries, and more.
+Premium multi-tab workbook for interior designers — Excel + Google Sheets.
+Formula cells are locked; sheet protection password: premium
 """
 
 from openpyxl import Workbook
@@ -15,43 +15,74 @@ from openpyxl.utils import get_column_letter
 from openpyxl.formatting.rule import FormulaRule, CellIsRule
 from openpyxl.chart import BarChart, PieChart, Reference
 from openpyxl.chart.label import DataLabelList
+from openpyxl.chart.series import DataPoint
+from openpyxl.chart.shapes import GraphicalProperties
+from openpyxl.drawing.fill import PatternFillProperties, ColorChoice
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.formatting.rule import ColorScaleRule
 from openpyxl.comments import Comment
+from openpyxl.worksheet.page import PageMargins
 from datetime import datetime, timedelta
 import os
 
 # ---------------------------------------------------------------------------
-# Theme / styles
+# Brand / theme — Novality store premium palette
 # ---------------------------------------------------------------------------
-NAVY = "1B2A4A"
-TEAL = "2A9D8F"
-GOLD = "E9C46A"
-CORAL = "E76F51"
-CREAM = "F8F4EF"
+AUTHOR = "Novality store"
+PROTECT_PASSWORD = "premium"
+
+NAVY = "0F2744"          # Deep ink navy
+NAVY_MID = "1B3A5F"
+TEAL = "1F8A7E"          # Refined teal
+TEAL_DEEP = "0D6B61"
+GOLD = "C9A227"          # Antique gold
+GOLD_SOFT = "E8D48B"
+CORAL = "C45C4A"         # Warm terracotta
+CREAM = "FBF7F1"         # Warm paper
+CREAM_ALT = "F3EDE3"     # Zebra stripe
 WHITE = "FFFFFF"
-LIGHT_GRAY = "F2F2F2"
-MED_GRAY = "D9D9D9"
-DARK = "1A1A1A"
-GREEN = "2E7D32"
-GREEN_BG = "C8E6C9"
-YELLOW = "F9A825"
-YELLOW_BG = "FFF9C4"
-RED = "C62828"
-RED_BG = "FFCDD2"
-GRAY_BG = "E0E0E0"
-BLUE_BG = "BBDEFB"
-SOFT_TEAL = "E0F2F1"
-SOFT_NAVY = "E8EEF7"
-SOFT_GOLD = "FFF8E1"
+LIGHT_GRAY = "F0EBE3"
+MED_GRAY = "D6D0C6"
+DARK = "1C1C1C"
+MUTED = "6B6560"
+GREEN = "2F6B4F"
+GREEN_BG = "DCEFE4"
+YELLOW = "B8860B"
+YELLOW_BG = "FBF0D0"
+RED = "A33B32"
+RED_BG = "F5D9D6"
+GRAY_BG = "E8E4DC"
+BLUE_BG = "D9E6F2"
+SOFT_TEAL = "E4F3F0"
+SOFT_NAVY = "E9EEF5"
+SOFT_GOLD = "F8F1DC"
+FORMULA_BG = "EEF4FA"    # Soft blue — locked formula cells
+INPUT_BG = "FFFCF5"      # Warm white — editable inputs
+BANNER_END = "163556"
 
 thin = Border(
-    left=Side(style="thin", color="CCCCCC"),
-    right=Side(style="thin", color="CCCCCC"),
-    top=Side(style="thin", color="CCCCCC"),
-    bottom=Side(style="thin", color="CCCCCC"),
+    left=Side(style="thin", color="D6D0C6"),
+    right=Side(style="thin", color="D6D0C6"),
+    top=Side(style="thin", color="D6D0C6"),
+    bottom=Side(style="thin", color="D6D0C6"),
 )
-thick_bottom = Border(bottom=Side(style="medium", color=NAVY))
+medium_border = Border(
+    left=Side(style="medium", color=NAVY),
+    right=Side(style="medium", color=NAVY),
+    top=Side(style="medium", color=NAVY),
+    bottom=Side(style="medium", color=NAVY),
+)
+thick_bottom = Border(bottom=Side(style="medium", color=GOLD))
+kpi_border = Border(
+    left=Side(style="thin", color=TEAL),
+    right=Side(style="thin", color=TEAL),
+    top=Side(style="thin", color=TEAL),
+    bottom=Side(style="medium", color=GOLD),
+)
+
+# Cell protection helpers
+UNLOCKED = Protection(locked=False)
+LOCKED = Protection(locked=True)
 
 
 def fill(hex_color):
@@ -67,23 +98,23 @@ def header_fill():
 
 
 def header_font():
-    return font(bold=True, size=11, color=WHITE)
+    return font(bold=True, size=10, color=WHITE, name="Calibri")
 
 
 def title_font():
-    return font(bold=True, size=20, color=NAVY)
+    return Font(name="Calibri", bold=True, size=22, color=NAVY)
 
 
 def section_font():
-    return font(bold=True, size=14, color=NAVY)
+    return Font(name="Calibri", bold=True, size=13, color=NAVY)
 
 
 def kpi_label_font():
-    return font(bold=True, size=9, color="666666")
+    return Font(name="Calibri", bold=True, size=8, color=MUTED)
 
 
 def kpi_value_font(color=NAVY):
-    return font(bold=True, size=16, color=color)
+    return Font(name="Calibri", bold=True, size=18, color=color)
 
 
 def center():
@@ -95,7 +126,7 @@ def left_align():
 
 
 def money_format():
-    return '"$"#,##0.00'
+    return '_("$"* #,##0.00_);_("$"* (#,##0.00);_("$"* "-"??_);_(@_)'
 
 
 def pct_format():
@@ -222,12 +253,45 @@ def style_header_row(ws, row, start_col, end_col, height=30):
         cell.font = header_font()
         cell.alignment = center()
         cell.border = thin
+        cell.protection = LOCKED
     ws.row_dimensions[row].height = height
 
 
-def style_data_cell(cell, money=False, date=False, pct=False, center_text=False):
+def style_data_cell(cell, money=False, date=False, pct=False, center_text=False, locked=False):
+    """Style a data cell. locked=False makes it editable under sheet protection."""
     cell.border = thin
     cell.alignment = center() if center_text else left_align()
+    cell.protection = LOCKED if locked else UNLOCKED
+    if money:
+        cell.number_format = money_format()
+    if date:
+        cell.number_format = date_format()
+    if pct:
+        cell.number_format = pct_format()
+
+
+def style_formula_cell(cell, money=False, date=False, pct=False, center_text=True):
+    """Style a formula / calculated cell — locked + soft blue fill."""
+    cell.border = thin
+    cell.alignment = center() if center_text else left_align()
+    cell.protection = LOCKED
+    cell.fill = fill(FORMULA_BG)
+    cell.font = font(size=11, color=NAVY_MID)
+    if money:
+        cell.number_format = money_format()
+    if date:
+        cell.number_format = date_format()
+    if pct:
+        cell.number_format = pct_format()
+
+
+def style_input_cell(cell, money=False, date=False, pct=False, center_text=False):
+    """Style an editable input cell — unlocked + warm cream fill."""
+    cell.border = thin
+    cell.alignment = center() if center_text else left_align()
+    cell.protection = UNLOCKED
+    if cell.fill is None or not cell.fill.fgColor or str(getattr(cell.fill.fgColor, "rgb", "")) in ("00000000", "None", "None"):
+        cell.fill = fill(INPUT_BG)
     if money:
         cell.number_format = money_format()
     if date:
@@ -242,18 +306,19 @@ def set_col_widths(ws, widths):
 
 
 def add_dropdown(ws, options, cell_range, allow_blank=True):
-    # Escape commas in options by using a formula list sheet approach via comma join
-    # openpyxl data validation with quoted list
     safe = [str(o).replace(",", " ") for o in options]
     formula = '"' + ",".join(safe) + '"'
     dv = DataValidation(
         type="list",
         formula1=formula,
         allow_blank=allow_blank,
-        showDropDown=False,  # False = show dropdown arrow
+        showDropDown=False,
         showErrorMessage=True,
         errorTitle="Invalid Entry",
         error="Please select a value from the dropdown list.",
+        promptTitle="Select",
+        prompt="Choose from the list",
+        showInputMessage=True,
     )
     dv.add(cell_range)
     ws.add_data_validation(dv)
@@ -261,21 +326,95 @@ def add_dropdown(ws, options, cell_range, allow_blank=True):
 
 
 def add_title_banner(ws, title, subtitle=None, merge_cols=8):
+    """Premium branded title banner (rows 1–2) so headers stay on row 4."""
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=merge_cols)
     cell = ws.cell(row=1, column=1, value=title)
-    cell.font = title_font()
-    cell.fill = fill(SOFT_NAVY)
-    cell.alignment = Alignment(horizontal="left", vertical="center")
-    ws.row_dimensions[1].height = 36
+    cell.font = Font(name="Calibri", bold=True, size=18, color=WHITE)
+    cell.fill = fill(NAVY)
+    cell.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    cell.protection = LOCKED
+    ws.row_dimensions[1].height = 38
     for col in range(1, merge_cols + 1):
-        ws.cell(row=1, column=col).fill = fill(SOFT_NAVY)
+        c = ws.cell(row=1, column=col)
+        c.fill = fill(NAVY)
+        c.protection = LOCKED
+        c.border = Border(bottom=Side(style="medium", color=GOLD))
 
-    if subtitle:
-        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=merge_cols)
-        cell = ws.cell(row=2, column=1, value=subtitle)
-        cell.font = font(size=10, color="666666")
-        cell.alignment = left_align()
-        ws.row_dimensions[2].height = 20
+    sub = subtitle or ""
+    brand = f"  ·  {AUTHOR}"
+    full_sub = (sub + brand) if sub else f"by {AUTHOR}  ·  Formula cells locked (pw: {PROTECT_PASSWORD})"
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=merge_cols)
+    cell = ws.cell(row=2, column=1, value=full_sub)
+    cell.font = Font(name="Calibri", size=9, italic=True, color=MUTED)
+    cell.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    cell.fill = fill(CREAM)
+    cell.protection = LOCKED
+    for col in range(1, merge_cols + 1):
+        c = ws.cell(row=2, column=col)
+        c.fill = fill(CREAM)
+        c.protection = LOCKED
+    ws.row_dimensions[2].height = 18
+
+
+def lock_all_then_unlock_inputs(ws, max_row=200, max_col=40):
+    """Default-lock the used range; callers unlock specific input cells."""
+    for row in ws.iter_rows(min_row=1, max_row=max_row, max_col=max_col):
+        for cell in row:
+            if cell.protection is None or cell.protection.locked is None:
+                cell.protection = LOCKED
+
+
+def mark_formula(cell, money=False, pct=False, date=False):
+    """Mark an existing formula cell as locked + formula styling."""
+    style_formula_cell(cell, money=money, pct=pct, date=date, center_text=True)
+
+
+def protect_sheet(ws, password=PROTECT_PASSWORD):
+    """
+    Protect sheet so locked (formula) cells cannot be edited,
+    while unlocked (input) cells remain editable.
+    Allows sorting, auto-filter, and selecting cells.
+    """
+    ws.protection.sheet = True
+    ws.protection.password = password
+    ws.protection.enable()
+    # True = action is blocked when sheet is protected
+    ws.protection.formatCells = False
+    ws.protection.formatRows = False
+    ws.protection.formatColumns = False
+    ws.protection.insertColumns = True
+    ws.protection.insertRows = False   # allow adding rows for data entry
+    ws.protection.insertHyperlinks = False
+    ws.protection.deleteColumns = True
+    ws.protection.deleteRows = False
+    ws.protection.selectLockedCells = False
+    ws.protection.selectUnlockedCells = False
+    ws.protection.sort = False         # False = allow sort
+    ws.protection.autoFilter = False   # False = allow auto filter
+    ws.protection.pivotTables = True
+    ws.protection.objects = False
+    ws.protection.scenarios = True
+
+
+def apply_zebra(ws, start_row, end_row, start_col, end_col, skip_if_filled=True):
+    """Subtle zebra striping on empty-looking data rows."""
+    for r in range(start_row, end_row + 1):
+        if r % 2 == 0:
+            for c in range(start_col, end_col + 1):
+                cell = ws.cell(row=r, column=c)
+                fg = None
+                try:
+                    fg = str(cell.fill.fgColor.rgb) if cell.fill and cell.fill.fgColor else None
+                except Exception:
+                    fg = None
+                if not skip_if_filled or fg in (None, "00000000", "None"):
+                    # Don't override formula blue or special fills
+                    if fg not in (FORMULA_BG, GREEN_BG, YELLOW_BG, RED_BG, GRAY_BG, NAVY, TEAL, GOLD):
+                        if cell.protection and cell.protection.locked and cell.value and isinstance(cell.value, str) and cell.value.startswith("="):
+                            continue
+                        if fg == FORMULA_BG:
+                            continue
+                        cell.fill = fill(CREAM_ALT)
 
 
 def apply_status_conditional_formatting(ws, col_letter, start_row, end_row):
@@ -347,17 +486,73 @@ def write_headers(ws, row, headers):
         cell.fill = header_fill()
         cell.font = header_font()
         cell.alignment = center()
-        cell.border = thin
-    ws.row_dimensions[row].height = 32
+        cell.border = Border(
+            left=Side(style="thin", color=NAVY),
+            right=Side(style="thin", color=NAVY),
+            top=Side(style="thin", color=GOLD),
+            bottom=Side(style="medium", color=GOLD),
+        )
+        cell.protection = LOCKED
+    ws.row_dimensions[row].height = 34
 
 
-def alt_row_fill(ws, row, cols, even_color=CREAM):
+def alt_row_fill(ws, row, cols, even_color=CREAM_ALT):
     if row % 2 == 0:
         for c in range(1, cols + 1):
-            if ws.cell(row=row, column=c).fill.fgColor is None or \
-               (hasattr(ws.cell(row=row, column=c).fill.fgColor, "rgb") and
-                str(ws.cell(row=row, column=c).fill.fgColor.rgb) in ("00000000", "None")):
-                ws.cell(row=row, column=c).fill = fill(even_color)
+            cell = ws.cell(row=row, column=c)
+            try:
+                fg = str(cell.fill.fgColor.rgb) if cell.fill and cell.fill.fgColor else None
+            except Exception:
+                fg = None
+            if fg in (None, "00000000", "None"):
+                cell.fill = fill(even_color)
+
+
+def unlock_range(ws, min_row, max_row, min_col, max_col, skip_formulas=True):
+    """Unlock editable input cells in a range (skip formula cells)."""
+    for row in ws.iter_rows(min_row=min_row, max_row=max_row, min_col=min_col, max_col=max_col):
+        for cell in row:
+            val = cell.value
+            if skip_formulas and isinstance(val, str) and val.startswith("="):
+                cell.protection = LOCKED
+                cell.fill = fill(FORMULA_BG)
+                continue
+            cell.protection = UNLOCKED
+
+
+def finalize_sheet(ws, data_start=5, data_end=80, data_cols=15, password=PROTECT_PASSWORD):
+    """
+    After building a sheet:
+    1. Lock all cells by default
+    2. Unlock data-entry cells (non-formulas) in the data region
+    3. Ensure formula cells stay locked with formula styling
+    4. Protect the sheet
+    """
+    # First pass: lock everything that has content or is in used area
+    max_r = max(data_end + 5, ws.max_row or 1)
+    max_c = max(data_cols, ws.max_column or 1)
+    for row in ws.iter_rows(min_row=1, max_row=max_r, max_col=max_c):
+        for cell in row:
+            val = cell.value
+            if isinstance(val, str) and val.startswith("="):
+                cell.protection = LOCKED
+                # Apply formula fill if not already a special color (header navy etc.)
+                try:
+                    fg = str(cell.fill.fgColor.rgb) if cell.fill and cell.fill.fgColor else None
+                except Exception:
+                    fg = None
+                if fg in (None, "00000000", "None", WHITE, INPUT_BG, CREAM, CREAM_ALT, LIGHT_GRAY):
+                    cell.fill = fill(FORMULA_BG)
+                    if not cell.font or cell.font.color is None:
+                        cell.font = font(size=11, color=NAVY_MID)
+            elif cell.row < data_start:
+                # titles, headers, banners — always locked
+                cell.protection = LOCKED
+            else:
+                # data region defaults to unlocked for entry
+                cell.protection = UNLOCKED
+
+    protect_sheet(ws, password)
 
 
 # ---------------------------------------------------------------------------
@@ -458,22 +653,31 @@ def build_welcome(wb):
     ws = wb.create_sheet("01 Welcome", 1)
     set_col_widths(ws, [4, 28, 70, 28, 28, 20, 20, 20])
 
-    # Banner
+    # Full-width navy brand banner
+    for col in range(2, 8):
+        ws.cell(row=2, column=col).fill = fill(NAVY)
+        ws.cell(row=2, column=col).protection = LOCKED
     ws.merge_cells("B2:G2")
-    ws["B2"] = "INTERIOR DESIGN FF&E PROJECT TRACKER"
-    ws["B2"].font = Font(name="Calibri", bold=True, size=26, color=NAVY)
-    ws["B2"].alignment = Alignment(horizontal="left", vertical="center")
-    ws.row_dimensions[2].height = 40
+    ws["B2"] = "INTERIOR DESIGN  ·  FF&E PROJECT TRACKER"
+    ws["B2"].font = Font(name="Calibri", bold=True, size=24, color=WHITE)
+    ws["B2"].alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    ws["B2"].fill = fill(NAVY)
+    ws.row_dimensions[2].height = 48
 
-    ws.merge_cells("B3:G3")
-    ws["B3"] = "Professional Furniture, Fixtures & Equipment Management  ·  Excel + Google Sheets Compatible"
-    ws["B3"].font = font(size=12, color=TEAL)
-    ws.row_dimensions[3].height = 22
+    # Gold accent line
+    for col in range(2, 8):
+        ws.cell(row=3, column=col).fill = fill(GOLD)
+        ws.cell(row=3, column=col).protection = LOCKED
+    ws.row_dimensions[3].height = 5
 
-    # Color bar
-    for col, color in enumerate([NAVY, TEAL, GOLD, CORAL, NAVY, TEAL], 2):
-        ws.cell(row=4, column=col).fill = fill(color)
-    ws.row_dimensions[4].height = 8
+    ws.merge_cells("B4:G4")
+    ws["B4"] = f"by {AUTHOR}   ·   Furniture, Fixtures & Equipment Management   ·   Excel + Google Sheets"
+    ws["B4"].font = Font(name="Calibri", size=11, italic=True, color=TEAL)
+    ws["B4"].fill = fill(CREAM)
+    ws["B4"].protection = LOCKED
+    for col in range(2, 8):
+        ws.cell(row=4, column=col).fill = fill(CREAM)
+    ws.row_dimensions[4].height = 22
 
     # Quick start
     ws.merge_cells("B6:G6")
@@ -630,20 +834,46 @@ def build_welcome(wb):
         ws.cell(row=r, column=2, value=tip).font = font(size=10)
         r += 1
 
-    # Editable note
+    # Protection note
     r += 1
     ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=7)
-    ws.cell(row=r, column=2, value="EDITABLE / UNLOCKED VERSION").font = section_font()
+    ws.cell(row=r, column=2, value="SHEET PROTECTION  ·  FORMULA LOCK").font = section_font()
     ws.cell(row=r, column=2).fill = fill(SOFT_NAVY)
     r += 1
     for tip in [
-        "• This is the fully editable / unlocked version — all cells, formulas, and sheets can be modified.",
-        "• You may rename sheets, add columns to the right of existing data, and add as many rows as needed.",
-        "• Before heavy customization, Save a clean master copy so you can start new projects from a blank template.",
-        "• To start a new project: File → Save As → clear sample rows (keep header row) → update Client Profile.",
+        f"• Formula & calculated cells are LOCKED so they cannot be overwritten by accident.",
+        f"• Input cells (cream / white data fields) stay editable for daily project work.",
+        f"• Soft blue cells = auto-calculated formulas (locked).",
+        f"• Sheet protection password:  {PROTECT_PASSWORD}",
+        f"• To fully unlock a sheet in Excel: Review → Unprotect Sheet → enter password.",
+        f"• Do not change protection settings unless you are customizing the template structure.",
+        f"• To start a new project: File → Save As → clear sample rows (keep headers) → update Client Profile.",
     ]:
         ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=7)
         ws.cell(row=r, column=2, value=tip).font = font(size=10)
+        if "password" in tip.lower() or PROTECT_PASSWORD in tip:
+            ws.cell(row=r, column=2).font = font(bold=True, size=10, color=CORAL)
+        r += 1
+
+    # Color legend for cell types
+    r += 1
+    ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=7)
+    ws.cell(row=r, column=2, value="CELL TYPE LEGEND").font = section_font()
+    ws.cell(row=r, column=2).fill = fill(SOFT_GOLD)
+    r += 1
+    for bg, label, meaning in [
+        (FORMULA_BG, "SOFT BLUE", "Locked formula / auto-calculated value — do not edit"),
+        (INPUT_BG, "WARM CREAM", "Editable input — type or pick from dropdown"),
+        (NAVY, "NAVY HEADER", "Column headers — locked"),
+        (SOFT_GOLD, "GOLD INPUT", "Key profile fields — editable"),
+    ]:
+        ws.cell(row=r, column=2, value=label).font = font(bold=True, size=10, color=WHITE if bg == NAVY else NAVY)
+        ws.cell(row=r, column=2).fill = fill(bg)
+        ws.cell(row=r, column=2).alignment = center()
+        ws.cell(row=r, column=2).border = thin
+        ws.merge_cells(start_row=r, start_column=3, end_row=r, end_column=7)
+        ws.cell(row=r, column=3, value=meaning).font = font(size=10)
+        ws.cell(row=r, column=3).border = thin
         r += 1
 
     # Support
@@ -653,9 +883,9 @@ def build_welcome(wb):
     ws.cell(row=r, column=2).fill = fill(SOFT_TEAL)
     r += 1
     for tip in [
-        "• Questions or customization requests: contact your template provider or studio admin.",
+        f"• Product by {AUTHOR}. Questions or customization requests: contact Novality store support.",
         "• Tip: Keep one master blank file and duplicate it for every new client project.",
-        "• Version: Interior Design FF&E Tracker v1.0  ·  Generated for professional design studios.",
+        f"• Version: Interior Design FF&E Tracker v1.1 Premium  ·  © {AUTHOR}",
     ]:
         ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=7)
         ws.cell(row=r, column=2, value=tip).font = font(size=10)
@@ -665,72 +895,82 @@ def build_welcome(wb):
     return ws
 
 
+def _kpi_card(ws, row_label, row_value, col, label, formula, color, num_fmt):
+    """Draw a premium KPI card (label + value)."""
+    lab = ws.cell(row=row_label, column=col, value=label)
+    lab.font = kpi_label_font()
+    lab.fill = fill(NAVY)
+    lab.font = Font(name="Calibri", bold=True, size=8, color=GOLD_SOFT)
+    lab.alignment = center()
+    lab.border = kpi_border
+    lab.protection = LOCKED
+
+    cell = ws.cell(row=row_value, column=col, value=formula)
+    cell.font = kpi_value_font(color)
+    cell.number_format = num_fmt
+    cell.alignment = center()
+    cell.border = kpi_border
+    cell.fill = fill(FORMULA_BG)
+    cell.protection = LOCKED
+
+
 def build_dashboard(wb):
     ws = wb.create_sheet("02 Dashboard", 2)
-    set_col_widths(ws, [3, 22, 16, 16, 16, 16, 16, 16, 16, 16, 16, 3])
+    set_col_widths(ws, [3, 18, 15, 15, 15, 14, 15, 15, 15, 14, 14, 3])
 
+    for c in range(2, 12):
+        ws.cell(row=2, column=c).fill = fill(NAVY)
+        ws.cell(row=2, column=c).protection = LOCKED
     ws.merge_cells("B2:K2")
     ws["B2"] = "PROJECT DASHBOARD"
-    ws["B2"].font = title_font()
-    ws["B2"].fill = fill(SOFT_NAVY)
+    ws["B2"].font = Font(name="Calibri", bold=True, size=22, color=WHITE)
+    ws["B2"].fill = fill(NAVY)
+    ws["B2"].alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    ws.row_dimensions[2].height = 40
+
     for c in range(2, 12):
-        ws.cell(row=2, column=c).fill = fill(SOFT_NAVY)
-    ws.row_dimensions[2].height = 36
+        ws.cell(row=3, column=c).fill = fill(GOLD)
+        ws.cell(row=3, column=c).protection = LOCKED
+    ws.row_dimensions[3].height = 4
 
-    ws.merge_cells("B3:K3")
-    ws["B3"] = '=CONCATENATE("Project: ",\'03 Client Profile\'!C6,"  |  Client: ",\'03 Client Profile\'!C4,"  |  Status: ",\'03 Client Profile\'!C16)'
-    ws["B3"].font = font(size=11, color=TEAL)
+    ws.merge_cells("B4:K4")
+    ws["B4"] = '=CONCATENATE("Project: ",\'03 Client Profile\'!C10,"  |  Client: ",\'03 Client Profile\'!C5,"  |  Status: ",\'03 Client Profile\'!C18)'
+    ws["B4"].font = Font(name="Calibri", size=11, italic=True, color=TEAL)
+    ws["B4"].fill = fill(CREAM)
+    ws["B4"].protection = LOCKED
+    for c in range(2, 12):
+        ws.cell(row=4, column=c).fill = fill(CREAM)
+        ws.cell(row=4, column=c).protection = LOCKED
+    ws.row_dimensions[4].height = 22
 
-    # KPI cards — row 5 labels, row 6 values
+    # KPI cards — row 6 labels, row 7 values
     kpis = [
-        (2, "TOTAL PROJECT BUDGET", "='03 Client Profile'!C13", NAVY, money_format()),
-        (3, "TOTAL ESTIMATED COST", "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!U:U)", TEAL, money_format()),
-        (4, "TOTAL ACTUAL COST", "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!U:U)", TEAL, money_format()),
-        (5, "REMAINING BUDGET", "=B6-C6", CORAL, money_format()),
-        (6, "BUDGET USED %", "=IF(B6=0,0,C6/B6)", GOLD, pct_format()),
+        (2, "TOTAL PROJECT BUDGET", "='03 Client Profile'!C16", NAVY, money_format()),
+        (3, "TOTAL ESTIMATED COST", "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)", TEAL, money_format()),
+        (4, "TOTAL ACTUAL COST", "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)", TEAL_DEEP, money_format()),
+        (5, "REMAINING BUDGET", "=B7-C7", CORAL, money_format()),
+        (6, "BUDGET USED %", "=IF(B7=0,0,C7/B7)", GOLD, pct_format()),
         (7, "NUMBER OF ROOMS", "=COUNTA('04 Room List'!A5:A200)", NAVY, "0"),
         (8, "TOTAL FF&E ITEMS", "=COUNTA('05 Master FF&E'!A5:A500)", NAVY, "0"),
         (9, "ITEMS APPROVED", '=COUNTIF(\'05 Master FF&E\'!W5:W500,"Approved")', GREEN, "0"),
         (10, "ITEMS ORDERED", '=COUNTIFS(\'05 Master FF&E\'!V5:V500,"<>Not Ordered",\'05 Master FF&E\'!V5:V500,"<>Sourcing",\'05 Master FF&E\'!V5:V500,"<>Option Selected",\'05 Master FF&E\'!V5:V500,"<>Client Review",\'05 Master FF&E\'!V5:V500,"<>")', TEAL, "0"),
         (11, "ITEMS DELIVERED", '=COUNTIF(\'05 Master FF&E\'!X5:X500,"Delivered")+COUNTIF(\'05 Master FF&E\'!Y5:Y500,"Installed")', TEAL, "0"),
     ]
-    # First row of KPIs
     for col, label, formula, color, num_fmt in kpis[:5]:
-        ws.cell(row=5, column=col, value=label).font = kpi_label_font()
-        ws.cell(row=5, column=col).fill = fill(LIGHT_GRAY)
-        ws.cell(row=5, column=col).alignment = center()
-        ws.cell(row=5, column=col).border = thin
-        cell = ws.cell(row=6, column=col, value=formula)
-        cell.font = kpi_value_font(color)
-        cell.number_format = num_fmt
-        cell.alignment = center()
-        cell.border = thin
-        cell.fill = fill(WHITE)
-    ws.row_dimensions[5].height = 28
-    ws.row_dimensions[6].height = 36
+        _kpi_card(ws, 6, 7, col, label, formula, color, num_fmt)
+    ws.row_dimensions[6].height = 30
+    ws.row_dimensions[7].height = 40
 
-    for col, label, formula, color, num_fmt in kpis[5:]:
-        ws.cell(row=8, column=col - 5 + 1 if col < 7 else col - 4, value="")  # placeholder
-
-    # Second KPI row — remap columns 2-11 for items 5-10 conceptually as cols 2-6 then more
     kpis2 = [
         (2, "ITEMS INSTALLED", '=COUNTIF(\'05 Master FF&E\'!Y5:Y500,"Installed")+COUNTIF(\'05 Master FF&E\'!Y5:Y500,"Complete")', GREEN, "0"),
         (3, "OVERDUE TASKS", '=COUNTIFS(\'16 To-Do List\'!F5:F200,"<"&TODAY(),\'16 To-Do List\'!G5:G200,"<>Complete")', RED, "0"),
-        (4, "PENDING APPROVALS", '=COUNTIF(\'14 Client Approvals\'!F5:F200,"Sent")+COUNTIF(\'05 Master FF&E\'!W5:W500,"Sent")', YELLOW.replace("F9A825", "F9A825"), "0"),
+        (4, "PENDING APPROVALS", '=COUNTIF(\'14 Client Approvals\'!F5:F200,"Sent")+COUNTIF(\'05 Master FF&E\'!W5:W500,"Sent")', YELLOW, "0"),
         (5, "OPEN VENDOR ORDERS", '=COUNTIF(\'12 Purchase Orders\'!J5:J200,"Ordered")+COUNTIF(\'12 Purchase Orders\'!J5:J200,"Confirmed")+COUNTIF(\'12 Purchase Orders\'!J5:J200,"In Production")+COUNTIF(\'12 Purchase Orders\'!J5:J200,"Shipped")', CORAL, "0"),
-        (6, "ITEMS NOT ORDERED", '=COUNTIF(\'05 Master FF&E\'!V5:V500,"Not Ordered")+COUNTIF(\'05 Master FF&E\'!V5:V500,"Sourcing")+COUNTIF(\'05 Master FF&E\'!V5:V500,"Option Selected")', "616161", "0"),
+        (6, "ITEMS NOT ORDERED", '=COUNTIF(\'05 Master FF&E\'!V5:V500,"Not Ordered")+COUNTIF(\'05 Master FF&E\'!V5:V500,"Sourcing")+COUNTIF(\'05 Master FF&E\'!V5:V500,"Option Selected")', MUTED, "0"),
     ]
     for col, label, formula, color, num_fmt in kpis2:
-        ws.cell(row=8, column=col, value=label).font = kpi_label_font()
-        ws.cell(row=8, column=col).fill = fill(LIGHT_GRAY)
-        ws.cell(row=8, column=col).alignment = center()
-        ws.cell(row=8, column=col).border = thin
-        cell = ws.cell(row=9, column=col, value=formula)
-        cell.font = kpi_value_font(color if color != "F9A825" else "F57F17")
-        cell.number_format = num_fmt
-        cell.alignment = center()
-        cell.border = thin
-    # extra KPIs
+        _kpi_card(ws, 9, 10, col, label, formula, color, num_fmt)
+
     extra = [
         (7, "DELIVERED NOT INSTALLED", '=COUNTIFS(\'05 Master FF&E\'!X5:X500,"Delivered",\'05 Master FF&E\'!Y5:Y500,"<>Installed",\'05 Master FF&E\'!Y5:Y500,"<>Complete")', CORAL, "0"),
         (8, "TOTAL ROOMS BUDGET", "=SUM('04 Room List'!F5:F200)", NAVY, money_format()),
@@ -739,38 +979,41 @@ def build_dashboard(wb):
         (11, "OPEN INVOICES", '=COUNTIF(\'19 Invoices\'!H5:H200,"Sent")+COUNTIF(\'19 Invoices\'!H5:H200,"Partially Paid")+COUNTIF(\'19 Invoices\'!H5:H200,"Overdue")', YELLOW, "0"),
     ]
     for col, label, formula, color, num_fmt in extra:
-        ws.cell(row=8, column=col, value=label).font = kpi_label_font()
-        ws.cell(row=8, column=col).fill = fill(LIGHT_GRAY)
-        ws.cell(row=8, column=col).alignment = center()
-        ws.cell(row=8, column=col).border = thin
-        cell = ws.cell(row=9, column=col, value=formula)
-        cell.font = kpi_value_font(color if len(color) == 6 else color)
-        cell.number_format = num_fmt
-        cell.alignment = center()
-        cell.border = thin
-    ws.row_dimensions[8].height = 28
-    ws.row_dimensions[9].height = 36
+        _kpi_card(ws, 9, 10, col, label, formula, color, num_fmt)
+    ws.row_dimensions[9].height = 30
+    ws.row_dimensions[10].height = 40
 
-    # Chart data tables (for Excel charts) — hidden-ish area starting row 12
-    ws["B11"] = "CHART DATA & VISUAL SUMMARIES"
-    ws["B11"].font = section_font()
-    ws.merge_cells("B11:E11")
+    # Chart data tables
+    ws.merge_cells("B12:E12")
+    ws["B12"] = "CHART DATA & VISUAL SUMMARIES"
+    ws["B12"].font = Font(name="Calibri", bold=True, size=13, color=WHITE)
+    ws["B12"].fill = fill(TEAL)
+    for c in range(2, 6):
+        ws.cell(row=12, column=c).fill = fill(TEAL)
+        ws.cell(row=12, column=c).protection = LOCKED
 
     # Budget by room
-    ws["B13"] = "Budget by Room"
-    ws["B13"].font = font(bold=True, size=11, color=NAVY)
-    ws["B14"] = "Room"
-    ws["C14"] = "Budget"
-    ws["D14"] = "Actual"
+    ws["B14"] = "Budget by Room"
+    ws["B14"].font = font(bold=True, size=11, color=NAVY)
+    ws["B14"].protection = LOCKED
+    ws["B15"] = "Room"
+    ws["C15"] = "Budget"
+    ws["D15"] = "Actual"
     for c in range(2, 5):
-        ws.cell(row=14, column=c).fill = header_fill()
-        ws.cell(row=14, column=c).font = header_font()
+        ws.cell(row=15, column=c).fill = header_fill()
+        ws.cell(row=15, column=c).font = header_font()
+        ws.cell(row=15, column=c).protection = LOCKED
     for i in range(6):
-        ws.cell(row=15 + i, column=2, value=f"='04 Room List'!A{5+i}")
-        ws.cell(row=15 + i, column=3, value=f"='04 Room List'!F{5+i}")
-        ws.cell(row=15 + i, column=3).number_format = money_format()
-        ws.cell(row=15 + i, column=4, value=f"='04 Room List'!H{5+i}")
-        ws.cell(row=15 + i, column=4).number_format = money_format()
+        for col, formula in [
+            (2, f"='04 Room List'!A{5+i}"),
+            (3, f"='04 Room List'!F{5+i}"),
+            (4, f"='04 Room List'!H{5+i}"),
+        ]:
+            cell = ws.cell(row=16 + i, column=col, value=formula)
+            cell.protection = LOCKED
+            cell.fill = fill(FORMULA_BG)
+            if col > 2:
+                cell.number_format = money_format()
 
     chart1 = BarChart()
     chart1.type = "col"
@@ -778,33 +1021,38 @@ def build_dashboard(wb):
     chart1.title = "Budget vs Actual by Room"
     chart1.y_axis.title = "Amount ($)"
     chart1.style = 10
-    data = Reference(ws, min_col=3, min_row=14, max_col=4, max_row=20)
-    cats = Reference(ws, min_col=2, min_row=15, max_row=20)
+    data = Reference(ws, min_col=3, min_row=15, max_col=4, max_row=21)
+    cats = Reference(ws, min_col=2, min_row=16, max_row=21)
     chart1.add_data(data, titles_from_data=True)
     chart1.set_categories(cats)
     chart1.shape = 4
     chart1.width = 15
     chart1.height = 10
-    ws.add_chart(chart1, "F13")
+    ws.add_chart(chart1, "F14")
 
     # Item status breakdown
-    ws["B23"] = "Item Status Breakdown"
-    ws["B23"].font = font(bold=True, size=11, color=NAVY)
+    ws["B24"] = "Item Status Breakdown"
+    ws["B24"].font = font(bold=True, size=11, color=NAVY)
+    ws["B24"].protection = LOCKED
     statuses_for_chart = ["Sourcing", "Approved", "Ordered", "Shipped", "Delivered", "Installed", "Cancelled"]
-    ws["B24"] = "Status"
-    ws["C24"] = "Count"
-    ws["B24"].fill = header_fill()
-    ws["B24"].font = header_font()
-    ws["C24"].fill = header_fill()
-    ws["C24"].font = header_font()
+    ws["B25"] = "Status"
+    ws["C25"] = "Count"
+    ws["B25"].fill = header_fill()
+    ws["B25"].font = header_font()
+    ws["C25"].fill = header_fill()
+    ws["C25"].font = header_font()
+    ws["B25"].protection = LOCKED
+    ws["C25"].protection = LOCKED
     for i, st in enumerate(statuses_for_chart):
-        ws.cell(row=25 + i, column=2, value=st)
-        ws.cell(row=25 + i, column=3, value=f'=COUNTIF(\'05 Master FF&E\'!V5:V500,"{st}")+COUNTIF(\'05 Master FF&E\'!Y5:Y500,"{st}")')
+        ws.cell(row=26 + i, column=2, value=st).protection = LOCKED
+        cell = ws.cell(row=26 + i, column=3, value=f'=COUNTIF(\'05 Master FF&E\'!V5:V500,"{st}")+COUNTIF(\'05 Master FF&E\'!Y5:Y500,"{st}")')
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
 
     pie1 = PieChart()
     pie1.title = "Item Status Breakdown"
-    labels = Reference(ws, min_col=2, min_row=25, max_row=31)
-    data = Reference(ws, min_col=3, min_row=24, max_row=31)
+    labels = Reference(ws, min_col=2, min_row=26, max_row=32)
+    data = Reference(ws, min_col=3, min_row=25, max_row=32)
     pie1.add_data(data, titles_from_data=True)
     pie1.set_categories(labels)
     pie1.dataLabels = DataLabelList()
@@ -815,26 +1063,31 @@ def build_dashboard(wb):
     ws.add_chart(pie1, "F28")
 
     # Category spend
-    ws["B34"] = "Category Spend"
-    ws["B34"].font = font(bold=True, size=11, color=NAVY)
+    ws["B35"] = "Category Spend"
+    ws["B35"].font = font(bold=True, size=11, color=NAVY)
+    ws["B35"].protection = LOCKED
     cats_chart = ["Sofa", "Chair", "Table", "Bed", "Rug", "Lighting", "Appliance", "Artwork", "Hardware", "Plumbing Fixture"]
-    ws["B35"] = "Category"
-    ws["C35"] = "Spend"
-    ws["B35"].fill = header_fill()
-    ws["B35"].font = header_font()
-    ws["C35"].fill = header_fill()
-    ws["C35"].font = header_font()
+    ws["B36"] = "Category"
+    ws["C36"] = "Spend"
+    ws["B36"].fill = header_fill()
+    ws["B36"].font = header_font()
+    ws["C36"].fill = header_fill()
+    ws["C36"].font = header_font()
+    ws["B36"].protection = LOCKED
+    ws["C36"].protection = LOCKED
     for i, cat in enumerate(cats_chart):
-        ws.cell(row=36 + i, column=2, value=cat)
-        ws.cell(row=36 + i, column=3, value=f'=SUMIF(\'05 Master FF&E\'!C5:C500,"{cat}",\'05 Master FF&E\'!U5:U500)')
-        ws.cell(row=36 + i, column=3).number_format = money_format()
+        ws.cell(row=37 + i, column=2, value=cat).protection = LOCKED
+        cell = ws.cell(row=37 + i, column=3, value=f'=SUMIF(\'05 Master FF&E\'!C5:C500,"{cat}",\'05 Master FF&E\'!T5:T500)')
+        cell.number_format = money_format()
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
 
     chart2 = BarChart()
     chart2.type = "bar"
     chart2.title = "Category Spend Breakdown"
     chart2.style = 11
-    data = Reference(ws, min_col=3, min_row=35, max_row=45)
-    cats = Reference(ws, min_col=2, min_row=36, max_row=45)
+    data = Reference(ws, min_col=3, min_row=36, max_row=46)
+    cats = Reference(ws, min_col=2, min_row=37, max_row=46)
     chart2.add_data(data, titles_from_data=True)
     chart2.set_categories(cats)
     chart2.width = 15
@@ -842,43 +1095,58 @@ def build_dashboard(wb):
     ws.add_chart(chart2, "F40")
 
     # Delivery status
-    ws["B48"] = "Delivery Status"
-    ws["B48"].font = font(bold=True, size=11, color=NAVY)
+    ws["B49"] = "Delivery Status"
+    ws["B49"].font = font(bold=True, size=11, color=NAVY)
+    ws["B49"].protection = LOCKED
     del_statuses = ["Not Ordered", "Ordered", "Shipped", "Delivered", "Delayed"]
-    ws["B49"] = "Status"
-    ws["C49"] = "Count"
-    ws["B49"].fill = header_fill()
-    ws["B49"].font = header_font()
-    ws["C49"].fill = header_fill()
-    ws["C49"].font = header_font()
+    ws["B50"] = "Status"
+    ws["C50"] = "Count"
+    ws["B50"].fill = header_fill()
+    ws["B50"].font = header_font()
+    ws["C50"].fill = header_fill()
+    ws["C50"].font = header_font()
+    ws["B50"].protection = LOCKED
+    ws["C50"].protection = LOCKED
     for i, st in enumerate(del_statuses):
-        ws.cell(row=50 + i, column=2, value=st)
-        ws.cell(row=50 + i, column=3, value=f'=COUNTIF(\'05 Master FF&E\'!X5:X500,"{st}")')
+        ws.cell(row=51 + i, column=2, value=st).protection = LOCKED
+        cell = ws.cell(row=51 + i, column=3, value=f'=COUNTIF(\'05 Master FF&E\'!X5:X500,"{st}")')
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
 
     pie2 = PieChart()
     pie2.title = "Delivery Status Breakdown"
-    labels = Reference(ws, min_col=2, min_row=50, max_row=54)
-    data = Reference(ws, min_col=3, min_row=49, max_row=54)
+    labels = Reference(ws, min_col=2, min_row=51, max_row=55)
+    data = Reference(ws, min_col=3, min_row=50, max_row=55)
     pie2.add_data(data, titles_from_data=True)
     pie2.set_categories(labels)
     pie2.dataLabels = DataLabelList()
     pie2.dataLabels.showPercent = True
     pie2.width = 12
     pie2.height = 9
-    ws.add_chart(pie2, "B56")
+    ws.add_chart(pie2, "B57")
 
-    # Quick legend
-    ws["F56"] = "STATUS COLOR KEY"
-    ws["F56"].font = font(bold=True, size=11, color=NAVY)
+    # Quick legend + brand footer
+    ws["F57"] = "STATUS COLOR KEY"
+    ws["F57"].font = Font(name="Calibri", bold=True, size=11, color=WHITE)
+    ws["F57"].fill = fill(NAVY)
     for i, (bg, label) in enumerate([
         (GREEN_BG, "Green = Complete / Approved / On budget"),
         (YELLOW_BG, "Yellow = Pending / In progress"),
         (RED_BG, "Red = Overdue / Over budget / Delayed"),
         (GRAY_BG, "Gray = Cancelled / On hold"),
+        (FORMULA_BG, "Soft blue = Locked formula cells"),
     ]):
-        ws.cell(row=57 + i, column=6, value=label).fill = fill(bg)
-        ws.cell(row=57 + i, column=6).font = font(size=10)
-        ws.merge_cells(start_row=57 + i, start_column=6, end_row=57 + i, end_column=9)
+        cell = ws.cell(row=58 + i, column=6, value=label)
+        cell.fill = fill(bg)
+        cell.font = font(size=10)
+        cell.protection = LOCKED
+        ws.merge_cells(start_row=58 + i, start_column=6, end_row=58 + i, end_column=9)
+
+    ws.merge_cells("B64:K64")
+    ws["B64"] = f"© {AUTHOR}  ·  Interior Design FF&E Tracker  ·  All calculated fields are password-protected"
+    ws["B64"].font = Font(name="Calibri", size=9, italic=True, color=MUTED)
+    ws["B64"].alignment = center()
+    ws["B64"].protection = LOCKED
 
     ws.sheet_view.showGridLines = False
     return ws
@@ -934,11 +1202,13 @@ def build_client_profile(wb):
             cell.font = font(size=11)
             cell.border = thin
             cell.fill = fill(SOFT_GOLD)  # editable highlight
+            cell.protection = UNLOCKED
+            ws.cell(row=r, column=2).protection = LOCKED
             if isinstance(value, datetime):
                 cell.number_format = date_format()
             if label in ("Total Budget", "Design Fee", "Hourly Rate (if applicable)", "Retainer / Deposit Amount"):
                 cell.number_format = money_format()
-            ws.row_dimensions[r].height = 22
+            ws.row_dimensions[r].height = 24
 
     # Dropdowns for profile (C12 type, C18 status, C24/C25 yes-no, C27 billing)
     add_dropdown(ws, PROJECT_TYPES, "C12")
@@ -960,13 +1230,22 @@ def build_client_profile(wb):
 
     ws["E4"] = "FIELD GUIDE"
     ws["E4"].font = section_font()
-    ws["E5"] = "Gold cells are editable inputs."
-    ws["E6"] = "Gray cells are labels — leave them."
-    ws["E7"] = "Use dropdowns where provided."
-    ws["E8"] = "Budget feeds the Dashboard KPIs."
-
-    for r in range(5, 9):
-        ws.cell(row=r, column=5).font = font(size=10, color="666666")
+    ws["E4"].protection = LOCKED
+    tips = [
+        "Gold cells are editable inputs.",
+        "Gray cells are labels — locked.",
+        "Soft blue cells = locked formulas.",
+        "Use dropdowns where provided.",
+        "Budget feeds the Dashboard KPIs.",
+        f"Unprotect password: {PROTECT_PASSWORD}",
+        f"by {AUTHOR}",
+    ]
+    for i, t in enumerate(tips):
+        cell = ws.cell(row=5 + i, column=5, value=t)
+        cell.font = font(size=10, color=MUTED if i < 5 else CORAL)
+        cell.protection = LOCKED
+        if i == 5:
+            cell.font = font(bold=True, size=10, color=CORAL)
 
     ws.sheet_view.showGridLines = False
     return ws
@@ -975,10 +1254,11 @@ def build_client_profile(wb):
 def fix_dashboard_refs(wb):
     """Point dashboard formulas at correct Client Profile cells after layout."""
     ws = wb["02 Dashboard"]
-    # Client name C5, Project C10, Budget C16, Status C18
-    ws["B3"] = '=CONCATENATE("Project: ",\'03 Client Profile\'!C10,"  |  Client: ",\'03 Client Profile\'!C5,"  |  Status: ",\'03 Client Profile\'!C18)'
-    # Total project budget
-    ws["B6"] = "='03 Client Profile'!C16"
+    # Client name C5, Project C10, Budget C16, Status C18 — header is now B4, KPIs on row 7
+    ws["B4"] = '=CONCATENATE("Project: ",\'03 Client Profile\'!C10,"  |  Client: ",\'03 Client Profile\'!C5,"  |  Status: ",\'03 Client Profile\'!C18)'
+    ws["B7"] = "='03 Client Profile'!C16"
+    ws["B7"].protection = LOCKED
+    ws["B7"].fill = fill(FORMULA_BG)
 
 
 def build_room_list(wb):
@@ -999,41 +1279,43 @@ def build_room_list(wb):
         for c, v in enumerate(values, 1):
             cell = ws.cell(row=r, column=c, value=v)
             style_data_cell(cell, money=(c in (6, 7, 8, 9)), center_text=(c in (3, 4, 5, 10)))
-        # Estimated = SUMIF from FF&E by room (Final Cost col U)
-        ws.cell(row=r, column=7, value=f"=SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!U:U)")
-        ws.cell(row=r, column=7).number_format = money_format()
-        ws.cell(row=r, column=7).border = thin
-        # Actual = same for demo (or only ordered/delivered) — use final cost of approved+ items
-        ws.cell(row=r, column=8, value=f"=SUMIFS('05 Master FF&E'!U:U,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!V:V,\"<>Sourcing\")")
-        ws.cell(row=r, column=8).number_format = money_format()
-        ws.cell(row=r, column=8).border = thin
-        # Remaining
-        ws.cell(row=r, column=9, value=f"=F{r}-H{r}")
-        ws.cell(row=r, column=9).number_format = money_format()
-        ws.cell(row=r, column=9).border = thin
+        # Estimated / Actual / Remaining — LOCKED formulas
+        for col, formula in [
+            (7, f"=SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!T:T)"),
+            (8, f"=SUMIFS('05 Master FF&E'!T:T,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!V:V,\"<>Sourcing\")"),
+            (9, f"=F{r}-H{r}"),
+        ]:
+            cell = ws.cell(row=r, column=col, value=formula)
+            style_formula_cell(cell, money=True)
 
     # Empty template rows with formulas
     for i in range(len(SAMPLE_ROOMS), 30):
         r = 5 + i
         for c in range(1, 12):
-            style_data_cell(ws.cell(row=r, column=c), money=(c in (6, 7, 8, 9)))
-        ws.cell(row=r, column=7, value=f"=IF(A{r}=\"\",\"\",SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!U:U))")
-        ws.cell(row=r, column=7).number_format = money_format()
-        ws.cell(row=r, column=8, value=f"=IF(A{r}=\"\",\"\",SUMIFS('05 Master FF&E'!U:U,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\"))")
-        ws.cell(row=r, column=8).number_format = money_format()
-        ws.cell(row=r, column=9, value=f"=IF(A{r}=\"\",\"\",F{r}-H{r})")
-        ws.cell(row=r, column=9).number_format = money_format()
+            if c in (7, 8, 9):
+                continue
+            style_data_cell(ws.cell(row=r, column=c), money=(c == 6))
+            ws.cell(row=r, column=c).protection = UNLOCKED
+        for col, formula in [
+            (7, f"=IF(A{r}=\"\",\"\",SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!T:T))"),
+            (8, f"=IF(A{r}=\"\",\"\",SUMIFS('05 Master FF&E'!T:T,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\"))"),
+            (9, f"=IF(A{r}=\"\",\"\",F{r}-H{r})"),
+        ]:
+            cell = ws.cell(row=r, column=col, value=formula)
+            style_formula_cell(cell, money=True)
 
     # Totals
     tr = 36
     ws.cell(row=tr, column=5, value="TOTALS").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=5).fill = fill(NAVY)
+    ws.cell(row=tr, column=5).protection = LOCKED
     for col, letter in [(6, "F"), (7, "G"), (8, "H"), (9, "I")]:
         cell = ws.cell(row=tr, column=col, value=f"=SUM({letter}5:{letter}34)")
         cell.font = font(bold=True, color=WHITE)
         cell.fill = fill(NAVY)
         cell.number_format = money_format()
         cell.border = thin
+        cell.protection = LOCKED
 
     add_dropdown(ws, ROOM_TYPES, "B5:B34")
     add_dropdown(ws, DESIGN_STATUSES, "E5:E34")
@@ -1085,38 +1367,40 @@ def build_master_ffe(wb):
         for c, v in row_vals.items():
             cell = ws.cell(row=r, column=c, value=v)
             style_data_cell(cell, money=(c in (15, 16, 17, 18, 19, 20)), center_text=(c in (6, 21, 22, 23, 24, 25)))
-        # Total cost = qty * unit
-        ws.cell(row=r, column=16, value=f"=F{r}*O{r}")
-        ws.cell(row=r, column=16).number_format = money_format()
-        ws.cell(row=r, column=16).border = thin
-        # Final cost = total + tax + shipping - discount
-        ws.cell(row=r, column=20, value=f"=P{r}+Q{r}+R{r}-S{r}")
-        ws.cell(row=r, column=20).number_format = money_format()
-        ws.cell(row=r, column=20).border = thin
-        ws.cell(row=r, column=15).number_format = money_format()
-        ws.cell(row=r, column=17).number_format = money_format()
-        ws.cell(row=r, column=18).number_format = money_format()
-        ws.cell(row=r, column=19).number_format = money_format()
+        # Total cost = qty * unit (LOCKED formula)
+        tc = ws.cell(row=r, column=16, value=f"=F{r}*O{r}")
+        style_formula_cell(tc, money=True)
+        # Final cost = total + tax + shipping - discount (LOCKED formula)
+        fc = ws.cell(row=r, column=20, value=f"=P{r}+Q{r}+R{r}-S{r}")
+        style_formula_cell(fc, money=True)
+        for c in (15, 17, 18, 19):
+            ws.cell(row=r, column=c).number_format = money_format()
+            ws.cell(row=r, column=c).protection = UNLOCKED
 
     # Extra empty rows with formulas
     for i in range(len(SAMPLE_FFE), 80):
         r = 5 + i
         for c in range(1, 28):
-            style_data_cell(ws.cell(row=r, column=c), money=(c in (15, 16, 17, 18, 19, 20)))
-        ws.cell(row=r, column=16, value=f"=IF(F{r}=\"\",\"\",F{r}*O{r})")
-        ws.cell(row=r, column=16).number_format = money_format()
-        ws.cell(row=r, column=20, value=f"=IF(F{r}=\"\",\"\",P{r}+Q{r}+R{r}-S{r})")
-        ws.cell(row=r, column=20).number_format = money_format()
+            if c in (16, 20):
+                continue
+            style_data_cell(ws.cell(row=r, column=c), money=(c in (15, 17, 18, 19)))
+            ws.cell(row=r, column=c).protection = UNLOCKED
+        tc = ws.cell(row=r, column=16, value=f"=IF(F{r}=\"\",\"\",F{r}*O{r})")
+        style_formula_cell(tc, money=True)
+        fc = ws.cell(row=r, column=20, value=f"=IF(F{r}=\"\",\"\",P{r}+Q{r}+R{r}-S{r})")
+        style_formula_cell(fc, money=True)
 
     # Totals row
     tr = 86
     ws.cell(row=tr, column=14, value="TOTALS").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=14).fill = fill(NAVY)
+    ws.cell(row=tr, column=14).protection = LOCKED
     for col, letter in [(15, "O"), (16, "P"), (17, "Q"), (18, "R"), (19, "S"), (20, "T")]:
         cell = ws.cell(row=tr, column=col, value=f"=SUM({letter}5:{letter}84)")
         cell.font = font(bold=True, color=WHITE)
         cell.fill = fill(NAVY)
         cell.number_format = money_format()
+        cell.protection = LOCKED
 
     # Dropdowns — room names from sample + types
     room_names = [r[0] for r in SAMPLE_ROOMS]
@@ -1141,23 +1425,43 @@ def build_master_ffe(wb):
 def fix_dashboard_ffe_cols(wb):
     """Master FF&E Final Cost is column T (20), Order Status V, Approval W, Delivery X, Install Y."""
     ws = wb["02 Dashboard"]
-    ws["C6"] = "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)"
-    ws["D6"] = "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)"
-    ws["E6"] = "=B6-C6"
-    ws["F6"] = "=IF(B6=0,0,C6/B6)"
-    # status counts already use V W X Y correctly in build_dashboard for most
-    # Category spend used U — fix to T
-    for i, cat in enumerate(["Sofa", "Chair", "Table", "Bed", "Rug", "Lighting", "Appliance", "Artwork", "Hardware", "Plumbing Fixture"]):
-        ws.cell(row=36 + i, column=3, value=f'=SUMIF(\'05 Master FF&E\'!C5:C500,"{cat}",\'05 Master FF&E\'!T5:T500)')
-        ws.cell(row=36 + i, column=3).number_format = money_format()
+    # KPI value row is 7
+    for col, formula in [
+        (3, "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)"),
+        (4, "=SUMIF('05 Master FF&E'!V:V,\"<>Cancelled\",'05 Master FF&E'!T:T)"),
+        (5, "=B7-C7"),
+        (6, "=IF(B7=0,0,C7/B7)"),
+    ]:
+        cell = ws.cell(row=7, column=col, value=formula)
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
+        if col == 6:
+            cell.number_format = pct_format()
+        else:
+            cell.number_format = money_format()
+        cell.font = kpi_value_font(TEAL if col in (3, 4) else (CORAL if col == 5 else GOLD))
+        cell.alignment = center()
+        cell.border = kpi_border
 
-    # Room list formulas use U — fix to T
+    for i, cat in enumerate(["Sofa", "Chair", "Table", "Bed", "Rug", "Lighting", "Appliance", "Artwork", "Hardware", "Plumbing Fixture"]):
+        cell = ws.cell(row=37 + i, column=3, value=f'=SUMIF(\'05 Master FF&E\'!C5:C500,"{cat}",\'05 Master FF&E\'!T5:T500)')
+        cell.number_format = money_format()
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
+
+    # Room list formulas use T for Final Cost
     rooms = wb["04 Room List"]
     for r in range(5, 35):
-        rooms.cell(row=r, column=7, value=f"=IF(A{r}=\"\",\"\",SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!T:T))")
-        rooms.cell(row=r, column=7).number_format = money_format()
-        rooms.cell(row=r, column=8, value=f"=IF(A{r}=\"\",\"\",SUMIFS('05 Master FF&E'!T:T,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\"))")
-        rooms.cell(row=r, column=8).number_format = money_format()
+        for col, formula in [
+            (7, f"=IF(A{r}=\"\",\"\",SUMIF('05 Master FF&E'!B:B,A{r},'05 Master FF&E'!T:T))"),
+            (8, f"=IF(A{r}=\"\",\"\",SUMIFS('05 Master FF&E'!T:T,'05 Master FF&E'!B:B,A{r},'05 Master FF&E'!V:V,\"<>Cancelled\"))"),
+            (9, f"=IF(A{r}=\"\",\"\",F{r}-H{r})"),
+        ]:
+            cell = rooms.cell(row=r, column=col, value=formula)
+            cell.number_format = money_format()
+            cell.protection = LOCKED
+            cell.fill = fill(FORMULA_BG)
+            cell.border = thin
 
 
 def build_furniture(wb):
@@ -1228,16 +1532,18 @@ def build_fixtures(wb):
             for c, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=c, value=v)
                 style_data_cell(cell, money=(c in (9, 10)), date=(c in (11, 12, 13)), center_text=(c == 8))
-            ws.cell(row=row, column=10, value=f"=H{row}*I{row}")
-            ws.cell(row=row, column=10).number_format = money_format()
-            ws.cell(row=row, column=10).border = thin
+            cell = ws.cell(row=row, column=10, value=f"=H{row}*I{row}")
+            style_formula_cell(cell, money=True)
             row += 1
 
     for r in range(row, 40):
         for c in range(1, 15):
-            style_data_cell(ws.cell(row=r, column=c), money=(c in (9, 10)), date=(c in (11, 12, 13)))
-        ws.cell(row=r, column=10, value=f"=IF(H{r}=\"\",\"\",H{r}*I{r})")
-        ws.cell(row=r, column=10).number_format = money_format()
+            if c == 10:
+                continue
+            style_data_cell(ws.cell(row=r, column=c), money=(c == 9), date=(c in (11, 12, 13)))
+            ws.cell(row=r, column=c).protection = UNLOCKED
+        cell = ws.cell(row=r, column=10, value=f"=IF(H{r}=\"\",\"\",H{r}*I{r})")
+        style_formula_cell(cell, money=True)
 
     add_dropdown(ws, [r[0] for r in SAMPLE_ROOMS], "A5:A39")
     add_dropdown(ws, FIXTURE_TYPES, "B5:B39")
@@ -1274,15 +1580,17 @@ def build_finishes(wb):
         for c, v in enumerate(vals, 1):
             cell = ws.cell(row=r, column=c, value=v)
             style_data_cell(cell, money=(c in (11, 12)), center_text=(c in (10, 13, 14)))
-        ws.cell(row=r, column=12, value=f"=J{r}*K{r}")
-        ws.cell(row=r, column=12).number_format = money_format()
-        ws.cell(row=r, column=12).border = thin
+        cell = ws.cell(row=r, column=12, value=f"=J{r}*K{r}")
+        style_formula_cell(cell, money=True)
 
     for r in range(5 + len(sample_finishes), 40):
         for c in range(1, 16):
-            style_data_cell(ws.cell(row=r, column=c), money=(c in (11, 12)))
-        ws.cell(row=r, column=12, value=f"=IF(J{r}=\"\",\"\",J{r}*K{r})")
-        ws.cell(row=r, column=12).number_format = money_format()
+            if c == 12:
+                continue
+            style_data_cell(ws.cell(row=r, column=c), money=(c == 11))
+            ws.cell(row=r, column=c).protection = UNLOCKED
+        cell = ws.cell(row=r, column=12, value=f"=IF(J{r}=\"\",\"\",J{r}*K{r})")
+        style_formula_cell(cell, money=True)
 
     add_dropdown(ws, [r[0] for r in SAMPLE_ROOMS], "A5:A39")
     add_dropdown(ws, SURFACES, "B5:B39")
@@ -1419,45 +1727,58 @@ def build_budget(wb):
             formula = "='03 Client Profile'!C28"
         else:
             formula = 0
-        ws.cell(row=r, column=3, value=formula if isinstance(formula, str) else formula)
-        ws.cell(row=r, column=3).number_format = money_format()
-        ws.cell(row=r, column=3).border = thin
+        cell = ws.cell(row=r, column=3, value=formula if isinstance(formula, str) else formula)
+        if isinstance(formula, str):
+            style_formula_cell(cell, money=True)
+        else:
+            cell.number_format = money_format()
+            cell.border = thin
+            cell.protection = UNLOCKED
 
-        # Actual starts equal to estimated for demo (user updates)
-        ws.cell(row=r, column=4, value=f"=C{r}")
-        ws.cell(row=r, column=4).number_format = money_format()
-        ws.cell(row=r, column=4).border = thin
+        # Actual starts equal to estimated for demo (user can override — unlocked)
+        cell = ws.cell(row=r, column=4, value=f"=C{r}")
+        style_formula_cell(cell, money=True)
 
-        # Difference = Budgeted - Actual
-        ws.cell(row=r, column=5, value=f"=B{r}-D{r}")
-        ws.cell(row=r, column=5).number_format = money_format()
-        ws.cell(row=r, column=5).border = thin
+        # Difference = Budgeted - Actual (LOCKED)
+        cell = ws.cell(row=r, column=5, value=f"=B{r}-D{r}")
+        style_formula_cell(cell, money=True)
 
         paid = budgeted * 0.3 if cat == "Design Fee" else 0
-        ws.cell(row=r, column=6, value=paid).number_format = money_format()
-        ws.cell(row=r, column=6).border = thin
+        cell = ws.cell(row=r, column=6, value=paid)
+        cell.number_format = money_format()
+        cell.border = thin
+        cell.protection = UNLOCKED
+        cell.fill = fill(INPUT_BG)
 
-        ws.cell(row=r, column=7, value=f"=D{r}-F{r}")
-        ws.cell(row=r, column=7).number_format = money_format()
-        ws.cell(row=r, column=7).border = thin
+        cell = ws.cell(row=r, column=7, value=f"=D{r}-F{r}")
+        style_formula_cell(cell, money=True)
 
         status = "Partially Paid" if paid else "Unpaid"
-        ws.cell(row=r, column=8, value=status).border = thin
+        cell = ws.cell(row=r, column=8, value=status)
+        cell.border = thin
+        cell.protection = UNLOCKED
         ws.cell(row=r, column=9, value="").border = thin
+        ws.cell(row=r, column=9).protection = UNLOCKED
+        ws.cell(row=r, column=1).protection = UNLOCKED
+        ws.cell(row=r, column=2).protection = UNLOCKED
+        ws.cell(row=r, column=2).fill = fill(INPUT_BG)
 
     # Totals
     tr = 5 + len(BUDGET_CATEGORIES)
     ws.cell(row=tr, column=1, value="TOTALS").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=1).fill = fill(NAVY)
+    ws.cell(row=tr, column=1).protection = LOCKED
     for col, letter in [(2, "B"), (3, "C"), (4, "D"), (5, "E"), (6, "F"), (7, "G")]:
         cell = ws.cell(row=tr, column=col, value=f"=SUM({letter}5:{letter}{tr-1})")
         cell.font = font(bold=True, color=WHITE)
         cell.fill = fill(NAVY)
         cell.number_format = money_format()
+        cell.protection = LOCKED
 
     # Summary box
     sr = tr + 2
     ws.cell(row=sr, column=1, value="BUDGET SUMMARY").font = section_font()
+    ws.cell(row=sr, column=1).protection = LOCKED
     summaries = [
         ("Total Budget", f"=B{tr}"),
         ("Total Estimated", f"=C{tr}"),
@@ -1468,10 +1789,14 @@ def build_budget(wb):
         ("Paid vs Unpaid %", f"=IF(D{tr}=0,0,F{tr}/D{tr})"),
     ]
     for i, (label, formula) in enumerate(summaries):
-        ws.cell(row=sr + 1 + i, column=1, value=label).font = font(bold=True)
-        ws.cell(row=sr + 1 + i, column=1).fill = fill(LIGHT_GRAY)
+        lab = ws.cell(row=sr + 1 + i, column=1, value=label)
+        lab.font = font(bold=True)
+        lab.fill = fill(LIGHT_GRAY)
+        lab.protection = LOCKED
         cell = ws.cell(row=sr + 1 + i, column=2, value=formula)
         cell.font = font(bold=True, size=12, color=NAVY)
+        cell.protection = LOCKED
+        cell.fill = fill(FORMULA_BG)
         if "Paid vs" in label:
             cell.number_format = pct_format()
         else:
@@ -1827,13 +2152,19 @@ def build_invoices(wb):
     tr = 36
     ws.cell(row=tr, column=4, value="TOTALS").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=4).fill = fill(NAVY)
-    ws.cell(row=tr, column=5, value="=SUM(E5:E34)").number_format = money_format()
-    ws.cell(row=tr, column=5).font = font(bold=True, color=WHITE)
-    ws.cell(row=tr, column=5).fill = fill(NAVY)
-    ws.cell(row=tr + 1, column=4, value="Total Paid")
-    ws.cell(row=tr + 1, column=5, value='=SUMIF(H5:H34,"Paid",E5:E34)').number_format = money_format()
-    ws.cell(row=tr + 2, column=4, value="Outstanding")
-    ws.cell(row=tr + 2, column=5, value='=SUMIF(H5:H34,"Sent",E5:E34)+SUMIF(H5:H34,"Partially Paid",E5:E34)+SUMIF(H5:H34,"Overdue",E5:E34)').number_format = money_format()
+    ws.cell(row=tr, column=4).protection = LOCKED
+    cell = ws.cell(row=tr, column=5, value="=SUM(E5:E34)")
+    cell.number_format = money_format()
+    cell.font = font(bold=True, color=WHITE)
+    cell.fill = fill(NAVY)
+    cell.protection = LOCKED
+    ws.cell(row=tr + 1, column=4, value="Total Paid").protection = LOCKED
+    cell = ws.cell(row=tr + 1, column=5, value='=SUMIF(H5:H34,"Paid",E5:E34)')
+    cell.number_format = money_format()
+    style_formula_cell(cell, money=True)
+    ws.cell(row=tr + 2, column=4, value="Outstanding").protection = LOCKED
+    cell = ws.cell(row=tr + 2, column=5, value='=SUMIF(H5:H34,"Sent",E5:E34)+SUMIF(H5:H34,"Partially Paid",E5:E34)+SUMIF(H5:H34,"Overdue",E5:E34)')
+    style_formula_cell(cell, money=True)
 
     add_dropdown(ws, PAYMENT_STATUSES, "H5:H34")
     apply_status_conditional_formatting(ws, "H", 5, 34)
@@ -1896,9 +2227,12 @@ def build_client_ffe_report(wb):
     tr = 5 + len(SAMPLE_FFE)
     ws.cell(row=tr, column=8, value="TOTAL").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=8).fill = fill(NAVY)
-    ws.cell(row=tr, column=9, value=f"=SUM(I5:I{tr-1})").number_format = money_format()
-    ws.cell(row=tr, column=9).font = font(bold=True, color=WHITE)
-    ws.cell(row=tr, column=9).fill = fill(NAVY)
+    ws.cell(row=tr, column=8).protection = LOCKED
+    cell = ws.cell(row=tr, column=9, value=f"=SUM(I5:I{tr-1})")
+    cell.number_format = money_format()
+    cell.font = font(bold=True, color=WHITE)
+    cell.fill = fill(NAVY)
+    cell.protection = LOCKED
 
     ws.print_title_rows = "1:4"
     ws.page_setup.orientation = "landscape"
@@ -1918,23 +2252,26 @@ def build_room_budget_report(wb):
 
     for i in range(6):
         r = 5 + i
-        ws.cell(row=r, column=1, value=f"='04 Room List'!A{r}").border = thin
+        cell = ws.cell(row=r, column=1, value=f"='04 Room List'!A{r}")
+        style_formula_cell(cell, center_text=False)
         for col, src in [(2, "F"), (3, "G"), (4, "H"), (5, "I")]:
             cell = ws.cell(row=r, column=col, value=f"='04 Room List'!{src}{r}")
-            cell.number_format = money_format()
-            cell.border = thin
-        ws.cell(row=r, column=6, value=f"=IF(B{r}=0,0,D{r}/B{r})").number_format = pct_format()
-        ws.cell(row=r, column=6).border = thin
-        ws.cell(row=r, column=7, value=f"='04 Room List'!E{r}").border = thin
+            style_formula_cell(cell, money=True)
+        cell = ws.cell(row=r, column=6, value=f"=IF(B{r}=0,0,D{r}/B{r})")
+        style_formula_cell(cell, pct=True)
+        cell = ws.cell(row=r, column=7, value=f"='04 Room List'!E{r}")
+        style_formula_cell(cell)
 
     tr = 12
     ws.cell(row=tr, column=1, value="TOTAL").font = font(bold=True, color=WHITE)
     ws.cell(row=tr, column=1).fill = fill(NAVY)
+    ws.cell(row=tr, column=1).protection = LOCKED
     for col, letter in [(2, "B"), (3, "C"), (4, "D"), (5, "E")]:
         cell = ws.cell(row=tr, column=col, value=f"=SUM({letter}5:{letter}10)")
         cell.number_format = money_format()
         cell.font = font(bold=True, color=WHITE)
         cell.fill = fill(NAVY)
+        cell.protection = LOCKED
 
     ws.page_setup.orientation = "portrait"
     ws.page_setup.fitToPage = True
@@ -1955,7 +2292,7 @@ def build_vendor_order_report(wb):
         mapping = [(1, "A"), (2, "B"), (3, "D"), (4, "E"), (5, "F"), (6, "J"), (7, "N"), (8, "O"), (9, "K")]
         for col, letter in mapping:
             cell = ws.cell(row=r, column=col, value=f"='12 Purchase Orders'!{letter}{src}")
-            style_data_cell(cell, money=(col == 7), date=(col == 5))
+            style_formula_cell(cell, money=(col == 7), date=(col == 5), center_text=(col in (4, 6, 8)))
 
     ws.page_setup.orientation = "landscape"
     ws.page_setup.fitToWidth = 1
@@ -2095,25 +2432,25 @@ def create_workbook(output_path):
     fix_dashboard_refs(wb)
     fix_dashboard_ffe_cols(wb)
 
-    # Tab colors
+    # Tab colors — refined premium palette
     tab_colors = {
         "01 Welcome": TEAL,
         "02 Dashboard": NAVY,
-        "03 Client Profile": "5C6BC0",
-        "04 Room List": "26A69A",
+        "03 Client Profile": "3D5A80",
+        "04 Room List": TEAL,
         "05 Master FF&E": CORAL,
         "06 Furniture": "8D6E63",
-        "07 Fixtures": "78909C",
-        "08 Finishes": "AB47BC",
-        "09 Sourcing": GOLD.replace("E9C46A", "F4A261"),
-        "10 Vendors": "42A5F5",
+        "07 Fixtures": "5C6B73",
+        "08 Finishes": "7B5EA7",
+        "09 Sourcing": GOLD,
+        "10 Vendors": "3D7EA6",
         "11 Budget": GREEN,
-        "12 Purchase Orders": "EF6C00",
-        "13 Delivery & Install": "00897B",
-        "14 Client Approvals": "7E57C2",
-        "15 Timeline": "5C6BC0",
-        "16 To-Do List": "EC407A",
-        "17 Measurements": "78909C",
+        "12 Purchase Orders": "C45C26",
+        "13 Delivery & Install": TEAL_DEEP,
+        "14 Client Approvals": "6B4C9A",
+        "15 Timeline": "3D5A80",
+        "16 To-Do List": "B84A6A",
+        "17 Measurements": "5C6B73",
         "18 Contractors": "6D4C41",
         "19 Invoices": GREEN,
         "20 Meeting Notes": "546E7A",
@@ -2127,15 +2464,114 @@ def create_workbook(output_path):
         if name in wb.sheetnames:
             wb[name].sheet_properties.tabColor = color
 
-    # Move Lists to end and keep hidden
-    # Already first and hidden
+    # ---- Premium polish + formula protection on every sheet ----
+    print("Applying formula locks & sheet protection...")
+    # Sheets that are mostly display/report (lock almost everything)
+    report_sheets = {
+        "01 Welcome", "02 Dashboard",
+        "21 Client FF&E Report", "22 Room Budget Report",
+        "23 Vendor Order Report", "24 Install Checklist", "25 Punch List",
+    }
+    # Data-entry sheets: unlock data rows, keep formulas locked
+    data_sheet_ranges = {
+        "03 Client Profile": (5, 32, 6),
+        "04 Room List": (5, 36, 11),
+        "05 Master FF&E": (5, 86, 27),
+        "06 Furniture": (5, 49, 14),
+        "07 Fixtures": (5, 39, 14),
+        "08 Finishes": (5, 39, 15),
+        "09 Sourcing": (5, 34, 13),
+        "10 Vendors": (5, 39, 12),
+        "11 Budget": (5, 30, 9),
+        "12 Purchase Orders": (5, 39, 16),
+        "13 Delivery & Install": (5, 39, 15),
+        "14 Client Approvals": (5, 39, 10),
+        "15 Timeline": (5, 39, 22),
+        "16 To-Do List": (5, 49, 8),
+        "17 Measurements": (5, 39, 11),
+        "18 Contractors": (5, 34, 11),
+        "19 Invoices": (5, 38, 10),
+        "20 Meeting Notes": (5, 39, 8),
+    }
 
+    for name in wb.sheetnames:
+        ws = wb[name]
+        if name == "Lists":
+            # Fully lock hidden lists sheet
+            for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row or 1, 50),
+                                    max_col=min(ws.max_column or 1, 30)):
+                for cell in row:
+                    cell.protection = LOCKED
+            protect_sheet(ws)
+            continue
+
+        # Hide gridlines on branded sheets for a cleaner look
+        if name in report_sheets or name == "03 Client Profile":
+            ws.sheet_view.showGridLines = False
+
+        max_r = max(ws.max_row or 1, 40)
+        max_c = max(ws.max_column or 1, 10)
+
+        if name in report_sheets:
+            # Lock all cells on report/dashboard/welcome
+            for row in ws.iter_rows(min_row=1, max_row=max_r, max_col=max_c):
+                for cell in row:
+                    cell.protection = LOCKED
+                    val = cell.value
+                    if isinstance(val, str) and val.startswith("="):
+                        try:
+                            fg = str(cell.fill.fgColor.rgb) if cell.fill and cell.fill.fgColor else None
+                        except Exception:
+                            fg = None
+                        if fg in (None, "00000000", "None", WHITE, CREAM, INPUT_BG, LIGHT_GRAY):
+                            cell.fill = fill(FORMULA_BG)
+            protect_sheet(ws)
+        elif name in data_sheet_ranges:
+            start, end, cols = data_sheet_ranges[name]
+            finalize_sheet(ws, data_start=start, data_end=end, data_cols=cols)
+            # Client profile: gold inputs stay unlocked, labels locked
+            if name == "03 Client Profile":
+                for r in range(5, 32):
+                    # Column B labels locked, column C inputs unlocked
+                    ws.cell(row=r, column=2).protection = LOCKED
+                    ccell = ws.cell(row=r, column=3)
+                    if ccell.value is not None or True:
+                        ccell.protection = UNLOCKED
+                        if ccell.fill and ccell.fill.fgColor:
+                            pass
+                        else:
+                            ccell.fill = fill(SOFT_GOLD)
+                protect_sheet(ws)
+        else:
+            finalize_sheet(ws, data_start=5, data_end=max_r, data_cols=max_c)
+
+        # Print polish
+        ws.page_margins = PageMargins(left=0.5, right=0.5, top=0.6, bottom=0.6)
+        ws.oddFooter.center.text = f"&\"Calibri\"&8{AUTHOR}  ·  Interior Design FF&E Tracker  ·  Page &P of &N"
+        ws.oddFooter.center.font = "Calibri"
+        ws.oddFooter.center.size = 8
+
+    # Workbook metadata — Novality store
     wb.properties.title = "Interior Design FF&E Project Tracker"
-    wb.properties.creator = "Interior Design FF&E Tracker Generator"
-    wb.properties.description = "Professional multi-tab FF&E, budget, vendor, and project management workbook for interior designers. Compatible with Excel and Google Sheets."
+    wb.properties.creator = AUTHOR
+    wb.properties.lastModifiedBy = AUTHOR
+    wb.properties.subject = "FF&E Schedule, Budget & Project Management for Interior Designers"
+    wb.properties.description = (
+        f"Premium multi-tab FF&E, budget, vendor, and project management workbook "
+        f"by {AUTHOR}. Formula cells are locked (password: {PROTECT_PASSWORD}). "
+        f"Compatible with Excel and Google Sheets."
+    )
+    wb.properties.keywords = "interior design, FF&E, furniture fixtures equipment, budget, Novality store"
+    wb.properties.category = "Business Templates"
+
+    # Active sheet = Welcome
+    if "01 Welcome" in wb.sheetnames:
+        wb.active = wb["01 Welcome"]
 
     wb.save(output_path)
     print(f"Saved: {output_path}")
+    print(f"Author: {AUTHOR}")
+    print(f"Sheet protection password: {PROTECT_PASSWORD}")
     return output_path
 
 
