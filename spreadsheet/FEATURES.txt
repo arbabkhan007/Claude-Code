@@ -1,0 +1,219 @@
+INTERIOR DESIGN PROJECT MANAGER — FEATURE REFERENCE
+===================================================
+
+PURPOSE
+-------
+A professional, reusable project-management workbook for interior designers,
+decorators, stagers, design studios, and project coordinators. It manages a
+project from client onboarding and product sourcing through purchasing,
+delivery, installation, billing, and final punch-list completion.
+
+FILE COMPATIBILITY
+------------------
+• Microsoft Excel: Native .xlsx format; no macros are required.
+• Google Sheets: Import with File > Import > Upload > Create new spreadsheet.
+• Editable/unlocked: All workbook content can be customized. No password is set.
+• Formula compatibility: Standard formulas work in Excel and Google Sheets.
+• Printable reports use FILTER, supported by current Excel and Google Sheets.
+• Chart styling can vary slightly after importing into Google Sheets.
+
+WORKSHEETS
+----------
+
+1. Welcome
+   • Beginner-friendly five-step quick-start guide.
+   • Data-entry, dropdown, filtering, and color-coding instructions.
+   • Excel and Google Sheets compatibility note.
+   • Editable/unlocked version note.
+   • Placeholder for seller support email, website, or documentation.
+   • Summary explaining what each group of tabs is used for.
+
+2. Project Dashboard
+   Live KPI cards:
+   • Total project budget
+   • Total estimated cost
+   • Total actual cost
+   • Remaining budget
+   • Budget used percentage
+   • Number of rooms
+   • Total FF&E items
+   • Items approved
+   • Items ordered
+   • Items delivered
+   • Items installed
+   • Overdue tasks
+   • Pending client approvals
+   • Open vendor orders
+   • Items not ordered
+   • Items delivered but not installed
+
+   Live charts:
+   • Budget by room
+   • Budget versus actual by category
+   • Item/order status breakdown
+   • Delivery status breakdown
+   • Category spend breakdown
+
+3. Client & Project Profile
+   • Client name, email, and phone
+   • Project name, address, and type
+   • Design style
+   • Start and target completion dates
+   • Total project budget
+   • Designer name
+   • Project status
+   • Contract signed and deposit paid indicators
+   • Design package and billing method
+   • Scope summary and client notes
+
+4. Room List
+   • Room name and standard room-type dropdown
+   • Floor/level and square footage
+   • Design status and priority
+   • Budget allocation
+   • Automatically calculated estimated spend, actual spend, and remaining budget
+   • Notes
+
+5. Master FF&E Schedule
+   • Item ID, room, category, item name, and description
+   • Quantity, dimensions, material, finish, and color
+   • Vendor, brand, product link, and SKU/model
+   • Unit cost
+   • Automatic Total Cost = Quantity × Unit Cost
+   • Tax, shipping, and discount
+   • Automatic Final Cost = Total Cost + Tax + Shipping − Discount
+   • Lead time
+   • Order, approval, delivery, and installation statuses
+   • Notes and image link
+
+6. Furniture Schedule
+   • Focused furniture-only list by room
+   • Dimensions, quantity, vendor, product link, material, and finish
+   • Cost, approval, order, delivery, and installation information
+
+7. Fixtures Schedule
+   • Lighting, plumbing, hardware, appliances, electrical, and other fixtures
+   • Finish, size, vendor, SKU, quantity, and unit cost
+   • Automatically calculated total cost
+   • Rough-in, order deadline, delivery date, and installer notes
+
+8. Finishes Schedule
+   • Room and surface/application
+   • Paint, wallpaper, flooring, tile, countertop, fabric, wood, metal, etc.
+   • Product, color, material, vendor, link, and SKU
+   • Quantity and unit cost with automatic total
+   • Sample ordered/approved and installer notes
+
+9. Product Sourcing
+   • Compare three product options and prices
+   • Preferred option, pros, cons, client feedback, and final selection
+
+10. Vendor Database
+    • Vendor type and contact information
+    • Website, account number, trade discount, and lead time
+    • Shipping terms, return policy, and notes
+
+11. Budget Tracker
+    • Standard design budget categories
+    • Budgeted, estimated, actual, difference, paid, and balance-due columns
+    • Automatic difference and balance formulas
+    • Payment status and notes
+    • Automatic totals
+    • Over-budget highlighting
+
+12. Order Tracker
+    • PO, vendor, room, item, and quantity
+    • Order, expected ship, expected delivery, and actual delivery dates
+    • Order status, tracking, carrier, invoice, amount, and payment status
+
+13. Delivery & Installation
+    • Delivery address and expected/actual delivery dates
+    • Delivery and damage-check statuses
+    • Receiver, damage notes, and storage location
+    • Installation date, installer, status, and punch-list notes
+
+14. Client Approvals
+    • Item/design decision and room
+    • Approval type
+    • Sent, response, and final approval dates
+    • Status, approved option, comments, and revision requirement
+
+15. Project Timeline
+    • Phase, task, assignee, start, due, and completion dates
+    • Status, priority, dependencies, and notes
+    • 26-week visual Gantt area with automatic date-based bars
+
+16. Task List
+    • Daily task, room, category, assignee, priority, due date, and status
+    • Dashboard automatically counts overdue incomplete tasks
+
+17. Measurement Log
+    • Room and measurement type
+    • Width, height, depth, length, ceiling height, windows, doors, and walls
+
+18. Contractor Tracker
+    • Contractor/vendor, trade, contact, scope, quote, and dates
+    • Payment status, insurance received, and contract signed
+
+19. Invoice & Payment
+    • Invoice number/date, client, description, amount, and due date
+    • Paid date, payment status, payment method, and notes
+
+20. Project Notes
+    • Date, meeting type, attendees, discussion, and decisions
+    • Action items, follow-up date, and notes
+
+21–25. Printable Reports
+    • Client-facing FF&E report
+    • Room-by-room budget report
+    • Vendor order report
+    • Delivery and installation checklist
+    • Final punch list
+    • Reports pull live data using FILTER formulas.
+
+26. Lists (hidden)
+    • Stores controlled dropdown values.
+    • Hidden to keep the workbook clean.
+    • Can be unhidden and edited when customization is required.
+
+PREMIUM AUTOMATION
+------------------
+• Dropdowns for rooms, categories, vendors, statuses, priorities, approvals,
+  orders, deliveries, installation, damage checks, invoices, and payments.
+• Named ranges connect room and vendor lists to related schedules.
+• Formula cells use a blue tint; normal input cells are white.
+• Automatic FF&E totals and final landed costs.
+• Automatic room spending and remaining budget.
+• Automatic budget difference, balance due, and totals.
+• Automatic dashboard counts and percentages.
+• Automatic overdue-task detection.
+• Automatic pending-approval and open-order metrics.
+• Automatic delivered-but-not-installed and not-ordered counts.
+• 5 live dashboard charts.
+• 5 dynamic printable reports.
+• Conditional formatting:
+  Green = complete, approved, paid, delivered, installed, or good condition
+  Yellow = pending, in progress, review, sent, scheduled, waiting, or ordered
+  Red = overdue, delayed, rejected, damaged, missing, wrong, or over budget
+  Gray = cancelled, returned, or on hold
+• Filters on all major schedules.
+• Frozen header rows for easier navigation.
+• Landscape print settings, repeated headers, and fit-to-page configuration.
+• 250 prepared rows on most schedules and 100 timeline task rows.
+• Macro-free and password-free.
+
+SOURCE-CODE CUSTOMIZATION
+-------------------------
+The Python generator is create_interior_design_workbook.py.
+
+Common changes:
+• Change ROWS = 250 to increase or decrease prepared schedule capacity.
+• Change OUT to select a different output filename/path.
+• Edit NAVY, BLUE, TEAL, GREEN, YELLOW, RED, and GRAY to rebrand colors.
+• Edit the lists dictionary to add dropdown choices.
+• Edit sheet_order to change worksheet order.
+• Update the Welcome-tab support placeholder before selling/distributing.
+
+For reliable dropdowns and dashboard calculations, users should select standard
+status values rather than typing variations. Keep a backup of the original
+workbook before changing formula columns or worksheet names.

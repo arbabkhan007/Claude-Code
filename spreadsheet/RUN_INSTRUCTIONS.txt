@@ -1,0 +1,81 @@
+INTERIOR DESIGN WORKBOOK — SOURCE CODE INSTRUCTIONS
+===================================================
+
+FILES
+-----
+create_interior_design_workbook.py  Python source code
+requirements.txt                    Required Python package and version range
+FEATURES.txt                        Permanent feature/reference document
+README.md                           Short project documentation
+Interior_Design_Project_Manager.xlsx Generated ready-to-use workbook
+
+REQUIREMENTS
+------------
+• Python 3.9 or newer recommended
+• XlsxWriter 3.2 or newer
+• Internet access is needed only once to install XlsxWriter
+
+WINDOWS — SIMPLE METHOD
+-----------------------
+1. Open Command Prompt in the repository/project folder.
+2. Run:
+
+   py -m venv .venv
+   .venv\Scripts\python.exe -m pip install -r spreadsheet\requirements.txt
+   .venv\Scripts\python.exe spreadsheet\create_interior_design_workbook.py
+
+3. Find the finished file at:
+   spreadsheet\Interior_Design_Project_Manager.xlsx
+
+MACOS / LINUX — SIMPLE METHOD
+-----------------------------
+1. Open Terminal in the repository/project folder.
+2. Run:
+
+   python3 -m venv .venv
+   .venv/bin/python -m pip install -r spreadsheet/requirements.txt
+   .venv/bin/python spreadsheet/create_interior_design_workbook.py
+
+3. Find the finished file at:
+   spreadsheet/Interior_Design_Project_Manager.xlsx
+
+GOOGLE SHEETS IMPORT
+--------------------
+1. Open Google Sheets.
+2. Select File > Import > Upload.
+3. Upload Interior_Design_Project_Manager.xlsx.
+4. Select Create new spreadsheet.
+5. Review chart positions because Google may render chart spacing differently.
+
+TROUBLESHOOTING
+---------------
+Error: No module named 'xlsxwriter'
+Solution: Install requirements with the command above. Make sure the same Python
+          executable is used for installation and generation.
+
+Error: Permission denied when replacing the workbook
+Solution: Close Interior_Design_Project_Manager.xlsx in Excel, then rerun.
+
+Workbook opens with formulas showing zero until edited
+Solution: Open in current Excel or Google Sheets and allow automatic calculation.
+          The source sets calculation mode to Automatic.
+
+Dropdown value is missing
+Solution: Unhide the Lists worksheet, add the value to the appropriate list, and
+          update the corresponding named range if the new value is beyond the
+          original list boundary. For permanent changes, edit the lists dictionary
+          in the Python source and regenerate.
+
+Dashboard count looks incorrect
+Solution: Use exact dropdown status values, enter an Item ID for every FF&E row,
+          and enter a PO number for every order. Avoid renaming source worksheets
+          unless the formulas are updated too.
+
+SAFE EDITING PRACTICES
+----------------------
+• Keep an untouched copy of the generated workbook.
+• Enter data in white cells.
+• Avoid pasting over blue formula cells.
+• Use dropdown values for accurate reports and KPIs.
+• Do not rename tabs unless all dependent formulas are updated.
+• Test a regenerated workbook before distributing it to customers.
