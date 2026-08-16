@@ -1,0 +1,330 @@
+INTERIOR DESIGN PROJECT MANAGEMENT WORKBOOK - FEATURE LIST
+===========================================================
+
+Purpose
+-------
+This source code creates a premium Google Sheets workbook for interior designers, decorators, home stagers, project managers, and design studios. It can also be exported to Microsoft Excel (.xlsx) after generation.
+
+Main Workbook Tabs
+------------------
+1. Welcome - Instructions
+   - Beginner-friendly quick start guide
+   - Step-by-step usage instructions
+   - Explanation of every major tab
+   - Data entry instructions
+   - Color coding guide
+   - Dropdown instructions
+   - Excel + Google Sheets compatibility note
+   - Editable/unlocked version note
+   - Support/contact placeholder
+
+2. Project Dashboard
+   - Visual KPI cards
+   - Total project budget
+   - Total estimated cost
+   - Total actual cost
+   - Remaining budget
+   - Budget used percentage
+   - Number of rooms
+   - Total FF&E items
+   - Items approved
+   - Items ordered
+   - Items delivered
+   - Items installed
+   - Overdue tasks
+   - Pending client approvals
+   - Open vendor orders
+   - Items not ordered
+   - Delivered but not installed count
+   - Budget by room chart
+   - Budget vs actual chart
+   - Item status breakdown chart
+   - Delivery status breakdown chart
+   - Category spend breakdown chart
+
+3. Client & Project Profile
+   - Client name
+   - Client email
+   - Phone number
+   - Project name
+   - Project address
+   - Project type dropdown
+   - Design style
+   - Start date
+   - Target completion date
+   - Total budget
+   - Designer name
+   - Client notes
+   - Scope summary
+   - Project status dropdown
+   - Contract signed yes/no
+   - Deposit paid yes/no
+   - Design package selected
+   - Billing method dropdown
+
+4. Room List
+   - Room name
+   - Room type dropdown
+   - Floor/level
+   - Square footage
+   - Design status dropdown
+   - Budget allocation
+   - Estimated spend auto-calculation
+   - Actual spend auto-calculation
+   - Remaining budget auto-calculation
+   - Priority dropdown
+   - Notes
+
+5. Master FF&E Schedule
+   - Item ID
+   - Room dropdown
+   - Category dropdown
+   - Item name
+   - Description
+   - Quantity
+   - Dimensions
+   - Material
+   - Finish
+   - Color
+   - Vendor dropdown
+   - Brand
+   - Product link
+   - SKU/model number
+   - Unit cost
+   - Total cost formula: quantity x unit cost
+   - Tax
+   - Shipping
+   - Discount
+   - Final cost formula: total cost + tax + shipping - discount
+   - Lead time
+   - Order status dropdown
+   - Approval status dropdown
+   - Delivery status dropdown
+   - Install status dropdown
+   - Notes
+   - Image link
+
+6. Furniture Schedule
+   - Furniture-only tracker for quick review
+   - Room, item, dimensions, quantity, vendor, link, material, finish, cost, approval/order statuses, delivery/install dates
+
+7. Fixtures Schedule
+   - Lighting, plumbing, hardware, appliances, and built-in fixtures
+   - Fixture type dropdown
+   - Total cost formula
+   - Rough-in and deadline dates
+   - Installer notes
+
+8. Finishes Schedule
+   - Paint, wallpaper, flooring, tile, countertops, fabrics, trims, stone, wood, metal, etc.
+   - Surface/application dropdown
+   - Finish type dropdown
+   - Sample ordered and sample approved yes/no dropdowns
+   - Total cost formula
+
+9. Product Sourcing Tracker
+   - Compare 3 sourcing options
+   - Option links and prices
+   - Preferred option dropdown
+   - Pros, cons, client feedback, final selection
+
+10. Vendor & Supplier Database
+   - Vendor details
+   - Vendor type dropdown
+   - Contact person, email, phone, website
+   - Account number
+   - Trade discount percentage
+   - Lead time
+   - Shipping terms
+   - Return policy
+   - Notes
+
+11. Budget Tracker
+   - Budget categories
+   - Budgeted, estimated, actual, difference
+   - Paid amount
+   - Balance due
+   - Payment status dropdown
+   - Totals section
+   - Total budget
+   - Total estimated
+   - Total actual
+   - Over/under budget
+   - Total paid
+   - Remaining balance
+
+12. Purchase Order Tracker
+   - PO number
+   - Vendor dropdown
+   - Room dropdown
+   - Item
+   - Quantity
+   - Order date
+   - Expected ship date
+   - Expected delivery date
+   - Actual delivery date
+   - Order status dropdown
+   - Tracking number
+   - Carrier
+   - Invoice number
+   - Amount
+   - Paid status dropdown
+   - Notes
+
+13. Delivery & Installation Tracker
+   - Item
+   - Room dropdown
+   - Vendor dropdown
+   - Delivery address
+   - Expected and actual delivery dates
+   - Delivery status dropdown
+   - Received by
+   - Damage check dropdown
+   - Damage notes
+   - Storage location
+   - Install date
+   - Installer
+   - Installation status dropdown
+   - Punch list notes
+
+14. Client Approval Tracker
+   - Item/design decision
+   - Room dropdown
+   - Approval type dropdown
+   - Sent to client date
+   - Client response date
+   - Status dropdown
+   - Approved option
+   - Client comments
+   - Revision needed yes/no dropdown
+   - Final approval date
+
+15. Project Timeline
+   - Phase dropdown
+   - Task
+   - Assigned to
+   - Start date
+   - Due date
+   - Completion date
+   - Status dropdown
+   - Priority dropdown
+   - Dependencies
+   - Notes
+   - Duration days auto-calculation
+   - Days overdue auto-calculation
+   - 12-week simple Gantt view
+
+16. Task & To-Do List
+   - Task
+   - Room dropdown
+   - Category
+   - Assigned to
+   - Priority dropdown
+   - Due date
+   - Status dropdown
+   - Notes
+   - Days overdue auto-calculation
+
+17. Measurement Log
+   - Room dropdown
+   - Measurement type dropdown
+   - Width, height, depth, length
+   - Ceiling height
+   - Window size
+   - Door size
+   - Wall length
+   - Notes
+
+18. Contractor / Installer Tracker
+   - Contractor/vendor name
+   - Trade dropdown
+   - Contact
+   - Scope
+   - Quote amount
+   - Start date
+   - End date
+   - Payment status dropdown
+   - Insurance received yes/no dropdown
+   - Contract signed yes/no dropdown
+   - Notes
+
+19. Invoice & Payment Tracker
+   - Invoice number
+   - Invoice date
+   - Client
+   - Description
+   - Amount
+   - Due date
+   - Paid date
+   - Payment status dropdown
+   - Payment method
+   - Notes
+   - Balance due formula
+
+20. Project Meeting Notes
+   - Date
+   - Meeting type dropdown
+   - Attendees
+   - Discussion points
+   - Decisions made
+   - Action items
+   - Follow-up date
+   - Notes
+
+Printable Report Tabs
+---------------------
+21. Client FFE Report
+   - Client-facing FF&E summary pulled from the master schedule
+
+22. Room Budget Report
+   - Room-by-room budget, estimated spend, actual spend, remaining budget, budget used %, and status
+
+23. Vendor Order Report
+   - Vendor, PO, room, item, quantity, order status, expected delivery, amount, paid status, tracking number
+
+24. Installation Checklist
+   - Room, item, vendor, delivery/install info, damage check, punch list notes, completion check
+
+25. Final Punch List
+   - Final issue list with responsible party, priority, due date, status, notes, and completed date
+
+Premium Features
+----------------
+- Dropdown menus for rooms, vendors, categories, statuses, priorities, approvals, orders, delivery, installation, payment, project types, fixture types, finish types, trades, meetings, and more.
+- Room dropdowns are linked to the Room List.
+- Vendor dropdowns are linked to the Vendor & Supplier Database.
+- Filters are applied to every major schedule/report tab.
+- Frozen header rows.
+- Header row warning protection to prevent accidental edits.
+- Auto-formulas for total cost, final cost, remaining budget, budget variance, paid balance, overdue tasks, and dashboard totals.
+- Conditional formatting colors:
+  - Green = complete / approved / installed / paid / on budget
+  - Yellow = pending / in progress / sent
+  - Red = delayed / overdue / rejected / over budget
+  - Gray = cancelled / on hold
+- Chart-based dashboard.
+- Printable reports for client, room budget, vendor orders, installation, and punch list.
+- Hidden Lists sheet stores dropdown options cleanly.
+- Works in Google Sheets and can be exported to Excel.
+
+How To Use Source Code
+----------------------
+1. Open a blank Google Sheet.
+2. Go to Extensions > Apps Script.
+3. Paste the code from interior_design_project_workbook_source.txt into Code.gs.
+4. Save the Apps Script project.
+5. Run buildInteriorDesignProjectWorkbook().
+6. Approve permissions.
+7. The full workbook will be generated automatically.
+8. Optional: download as Excel from File > Download > Microsoft Excel (.xlsx).
+
+Fool-Proof / Safety Notes
+-------------------------
+- The script creates all sheets automatically.
+- It resets the active workbook before rebuilding so duplicate tabs are avoided.
+- Header rows are protected with warning-only protection, so users can still edit intentionally.
+- Formula columns are auto-filled for 250 rows.
+- Dropdown values are stored in a hidden Lists sheet.
+- Major schedule tabs automatically receive filters.
+- The workbook is editable and can be customized after generation.
+- If Google chart placement looks different after Excel export, resize the charts manually in Excel.
