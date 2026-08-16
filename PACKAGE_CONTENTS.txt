@@ -1,0 +1,50 @@
+================================================================================
+  NOVALITY STORE — Interior Design FF&E Project Tracker
+  SOURCE PACKAGE CONTENTS
+================================================================================
+
+DOWNLOAD / USE THESE FILES:
+
+1. create_ffe_spreadsheet.py
+   Full fool-proof Python generator source code.
+   Also duplicated as:
+     - SOURCE_CODE.py
+     - create_ffe_spreadsheet.py.txt  (same code, .txt for easy open)
+
+2. requirements.txt
+   Python dependency: openpyxl>=3.1.0
+   Also as requirements.txt.txt
+
+3. FEATURES.txt
+   Complete feature specification for future product / listing use.
+   Every tab, column, dropdown, formula, chart, and protection rule.
+
+4. HOW_TO_RUN.txt
+   Step-by-step setup on Windows, macOS, Linux.
+
+5. README.md
+   Short product overview.
+
+6. Interior_Design_FFE_Project_Tracker.xlsx
+   Ready-to-use generated spreadsheet.
+   Author: Novality store
+   Formula lock password: premium
+
+7. PACKAGE_CONTENTS.txt
+   This index.
+
+================================================================================
+QUICK REGENERATE
+================================================================================
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  python create_ffe_spreadsheet.py
+
+================================================================================
+PROTECTION
+================================================================================
+  Password: premium
+  Author:   Novality store
+
+================================================================================

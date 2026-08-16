@@ -1,0 +1,737 @@
+================================================================================
+  INTERIOR DESIGN FF&E PROJECT TRACKER — FEATURE SPECIFICATION
+  Product by: Novality store
+  Version: 1.1 Premium
+  File format: Microsoft Excel .xlsx (also opens in Google Sheets)
+  Generator: create_ffe_spreadsheet.py (Python 3 + openpyxl)
+================================================================================
+
+PURPOSE
+-------
+A professional multi-tab workbook for interior designers and home decorators
+to manage full project lifecycle: client profile, rooms, FF&E schedule,
+furniture/fixtures/finishes, sourcing, vendors, budget, purchase orders,
+delivery & installation, client approvals, timeline, tasks, measurements,
+contractors, invoices, meeting notes, and printable reports.
+
+FF&E = Furniture, Fixtures & Equipment.
+
+
+================================================================================
+1. BRANDING & PRODUCT METADATA
+================================================================================
+- Author / Creator: Novality store
+- Workbook title: Interior Design FF&E Project Tracker
+- Keywords: interior design, FF&E, furniture fixtures equipment, budget
+- Category: Business Templates
+- Active sheet on open: 01 Welcome
+- Colored worksheet tabs (navy, teal, gold, coral palette)
+- Print footer on every sheet: Novality store · page numbers
+- Premium visual theme:
+  * Deep ink navy headers (#0F2744)
+  * Antique gold accents (#C9A227)
+  * Refined teal (#1F8A7E)
+  * Warm cream paper background (#FBF7F1)
+  * Soft-blue locked formula cells (#EEF4FA)
+  * Warm cream / gold editable input cells
+
+
+================================================================================
+2. SHEET PROTECTION & FORMULA LOCKING
+================================================================================
+- Sheet protection password: premium
+- Formula / calculated cells: LOCKED (cannot edit accidentally)
+- Input / data-entry cells: UNLOCKED (still editable while sheet is protected)
+- Headers, titles, labels, banners: LOCKED
+- Soft-blue fill = locked formula
+- Cream / gold fill = editable input
+- Filters and sorting remain allowed under protection
+- Insert/delete columns blocked; row insert allowed for data growth
+- To fully unlock in Excel: Review → Unprotect Sheet → password: premium
+- NOTE: Google Sheets does not fully honor Excel sheet protection the same way;
+  full formula locking works best in Microsoft Excel.
+
+
+================================================================================
+3. TAB INVENTORY (26 sheets)
+================================================================================
+Hidden:
+  Lists                  Dropdown option master lists (customizable)
+
+Visible:
+  01 Welcome             Instructions, quick start, color legend, support
+  02 Dashboard           KPI cards + charts (main selling feature)
+  03 Client Profile      Client & project summary
+  04 Room List           Room / area tracker with budget rollup
+  05 Master FF&E         Core FF&E schedule (27 columns)
+  06 Furniture           Furniture-only focused schedule
+  07 Fixtures            Lighting, plumbing, hardware, appliances
+  08 Finishes            Paint, tile, flooring, wallpaper, fabrics
+  09 Sourcing            Compare up to 3 product options
+  10 Vendors             Supplier / trade account database
+  11 Budget              Category budget vs estimated vs actual
+  12 Purchase Orders     PO / order tracker
+  13 Delivery & Install  Delivery logistics + installation
+  14 Client Approvals    Client decision / approval log
+  15 Timeline            Phased plan + 12-week Gantt view
+  16 To-Do List          Daily tasks with overdue highlight
+  17 Measurements        Room / window / door measurement log
+  18 Contractors         Trade / installer coordination
+  19 Invoices            Client billing & payment tracker
+  20 Meeting Notes       Consultations, site visits, vendor meetings
+  21 Client FF&E Report  Printable client-facing FF&E summary
+  22 Room Budget Report  Printable room-by-room budget
+  23 Vendor Order Report Printable vendor order summary
+  24 Install Checklist   Printable installation checklist
+  25 Punch List          Printable final punch list
+
+
+================================================================================
+4. TAB 01 — WELCOME / INSTRUCTIONS
+================================================================================
+Includes:
+- Branded navy + gold title banner (Novality store)
+- Quick Start Guide (5 steps):
+  Step 1: Add client/project details
+  Step 2: Add rooms
+  Step 3: Add FF&E items
+  Step 4: Track budget, orders, approvals, delivery
+  Step 5: Use dashboard for overview
+- What each tab is used for (full tab index table)
+- How to enter data (currency, dates, links, formulas)
+- Color coding explanation (green/yellow/red/gray + cell type legend)
+- Dropdown instructions
+- Compatibility note: Excel + Google Sheets
+- Sheet protection / formula lock explanation
+- Editable input vs locked formula legend
+- Support / contact note (Novality store)
+- Version line
+
+
+================================================================================
+5. TAB 02 — PROJECT DASHBOARD (MAIN SELLING FEATURE)
+================================================================================
+Visual KPI cards (auto-calculated, locked formulas):
+- Total project budget
+- Total estimated cost
+- Total actual cost
+- Remaining budget
+- Budget used %
+- Number of rooms
+- Total FF&E items
+- Items approved
+- Items ordered
+- Items delivered
+- Items installed
+- Overdue tasks
+- Pending client approvals
+- Open vendor orders
+- Items not ordered
+- Delivered but not installed
+- Total rooms budget
+- Rooms over budget
+- Vendors on file
+- Open invoices
+
+Charts:
+- Budget vs Actual by Room (clustered column chart)
+- Item Status Breakdown (pie chart)
+- Category Spend Breakdown (bar chart)
+- Delivery Status Breakdown (pie chart)
+
+Also:
+- Live project/client/status header line (linked to Client Profile)
+- Status color key legend
+- Brand footer
+- Gridlines hidden for clean presentation look
+
+
+================================================================================
+6. TAB 03 — CLIENT & PROJECT PROFILE
+================================================================================
+Client Information:
+- Client name
+- Client email
+- Phone number
+
+Project Details:
+- Project name
+- Project address
+- Project type (dropdown): Residential, Commercial, Office, Retail,
+  Hospitality, Staging
+- Design style
+- Start date
+- Target completion date
+- Total budget (feeds Dashboard)
+- Designer name
+- Project status (dropdown): Inquiry, Proposal, Active, On Hold,
+  Completed, Cancelled
+- Scope summary
+- Client notes
+
+Contract & Billing (optional):
+- Contract signed: Yes/No
+- Deposit paid: Yes/No
+- Design package selected
+- Billing method: Flat Fee, Hourly, Percentage, Hybrid
+- Design fee
+- Hourly rate
+- Retainer / deposit amount
+
+UI:
+- Gold editable input cells
+- Locked gray labels
+- Field guide panel
+
+
+================================================================================
+7. TAB 04 — ROOM LIST / AREA TRACKER
+================================================================================
+Columns:
+- Room name
+- Room type (dropdown)
+- Floor/level
+- Square footage
+- Design status (dropdown)
+- Budget allocation (input)
+- Estimated spend (FORMULA — SUMIF from Master FF&E)
+- Actual spend (FORMULA — SUMIFS excluding Cancelled)
+- Remaining budget (FORMULA — Budget − Actual)
+- Priority level (dropdown)
+- Notes
+
+Room type dropdown:
+Living Room, Bedroom, Kitchen, Bathroom, Dining Room, Entryway, Office,
+Nursery, Outdoor, Commercial Space, Other
+
+Also:
+- Totals row (SUM formulas, locked)
+- Conditional formatting on status/priority
+- Remaining budget turns red if negative
+- AutoFilter + freeze header
+- Sample rooms included
+
+
+================================================================================
+8. TAB 05 — MASTER FF&E SCHEDULE (CORE TAB)
+================================================================================
+Columns (27):
+  A  Item ID
+  B  Room
+  C  Category
+  D  Item name
+  E  Description
+  F  Quantity
+  G  Dimensions
+  H  Material
+  I  Finish
+  J  Color
+  K  Vendor
+  L  Brand
+  M  Product link
+  N  SKU/model number
+  O  Unit cost
+  P  Total cost          FORMULA: =Quantity × Unit Cost
+  Q  Tax
+  R  Shipping
+  S  Discount
+  T  Final cost          FORMULA: =Total + Tax + Shipping − Discount
+  U  Lead time (weeks)
+  V  Order status
+  W  Approval status
+  X  Delivery status
+  Y  Install status
+  Z  Notes
+  AA Image link
+
+Category dropdown:
+Sofa, Chair, Table, Bed, Rug, Lighting, Artwork, Mirror, Window Treatment,
+Hardware, Plumbing Fixture, Appliance, Decor, Textile, Cabinetry, Flooring,
+Wallcovering, Other
+
+Order status dropdown:
+Sourcing, Option Selected, Client Review, Approved, Ordered, Shipped,
+Delivered, Installed, Cancelled, Backordered, Not Ordered, Confirmed,
+In Production, Delayed, Returned
+
+Approval / Delivery / Install status dropdowns included.
+
+Also:
+- 80 formula-prepped data rows
+- Totals row for cost columns
+- Conditional formatting on status columns
+- AutoFilter + freeze panes
+- Sample FF&E items (15)
+
+
+================================================================================
+9. TAB 06 — FURNITURE SCHEDULE
+================================================================================
+Focused furniture-only list (Sofa, Chair, Table, Bed, Rug).
+Columns:
+Room, Furniture item, Dimensions, Quantity, Vendor, Product link,
+Fabric/material, Finish, Cost, Approval status, Order status,
+Delivery date, Install date, Notes
+
+Dropdowns: Room, Vendor, Approval status, Order status
+Filters + conditional formatting
+
+
+================================================================================
+10. TAB 07 — FIXTURES SCHEDULE
+================================================================================
+For lighting, plumbing, hardware, appliances, built-ins.
+Columns:
+Room, Fixture type, Item name, Finish, Size, Vendor, Model/SKU,
+Quantity, Unit cost, Total cost (FORMULA qty×unit),
+Required rough-in date, Order deadline, Delivery date, Installer notes
+
+Fixture types:
+Lighting, Faucet, Sink, Shower Fixture, Tub, Toilet, Cabinet Hardware,
+Door Hardware, Appliance, Electrical, Other
+
+
+================================================================================
+11. TAB 08 — FINISHES SCHEDULE
+================================================================================
+Columns:
+Room, Surface/application, Finish type, Product name, Color/finish,
+Material, Vendor, Product link, SKU, Quantity needed, Unit cost,
+Total cost (FORMULA), Sample ordered, Sample approved, Installer notes
+
+Finish types:
+Paint, Wallpaper, Flooring, Tile, Countertop, Backsplash, Cabinet Finish,
+Fabric, Trim, Stone, Wood, Metal, Other
+
+Surfaces:
+Wall, Ceiling, Floor, Cabinet, Countertop, Shower Wall, Backsplash,
+Upholstery, Drapery, Other
+
+
+================================================================================
+12. TAB 09 — PRODUCT SOURCING TRACKER
+================================================================================
+Compare options before final FF&E selection.
+Columns:
+Room, Item needed,
+Option 1 link, Option 1 price,
+Option 2 link, Option 2 price,
+Option 3 link, Option 3 price,
+Preferred option, Pros, Cons, Client feedback, Final selection
+
+Preferred option dropdown: Option 1, Option 2, Option 3, None / Keep Looking
+
+
+================================================================================
+13. TAB 10 — VENDOR & SUPPLIER DATABASE
+================================================================================
+Columns:
+Vendor name, Vendor type, Contact person, Email, Phone, Website,
+Account number, Trade discount %, Lead time, Shipping terms,
+Return policy, Notes
+
+Vendor types:
+Furniture, Lighting, Fabric, Flooring, Tile, Paint, Wallpaper, Decor,
+Hardware, Contractor, Installer, Workroom, Custom Furniture, Other
+
+Sample: 10 trade vendors with discounts and lead times
+
+
+================================================================================
+14. TAB 11 — BUDGET TRACKER
+================================================================================
+Columns:
+Budget category, Budgeted amount, Estimated amount, Actual amount,
+Difference (FORMULA), Paid amount, Balance due (FORMULA),
+Payment status, Notes
+
+Categories:
+Furniture, Lighting, Rugs, Decor, Artwork, Window Treatments, Flooring,
+Paint/Wallcovering, Contractor Labor, Installation, Shipping, Taxes,
+Design Fee, Contingency
+
+Auto formulas:
+- Estimated pulls from Master FF&E where mappable (Furniture, Lighting,
+  Rugs, Artwork, Shipping, Taxes, Design Fee)
+- Difference = Budgeted − Actual
+- Balance due = Actual − Paid
+- Totals row
+- Budget Summary box:
+  * Total budget
+  * Total estimated
+  * Total actual
+  * Over/under budget
+  * Remaining balance due
+  * Total paid
+  * Paid vs unpaid %
+
+Conditional formatting:
+- Difference green if >= 0, red if < 0
+- Payment status color coding
+
+
+================================================================================
+15. TAB 12 — PURCHASE ORDER / ORDER TRACKER
+================================================================================
+Columns:
+PO number, Vendor, Room, Item, Quantity, Order date,
+Expected ship date, Expected delivery date, Actual delivery date,
+Order status, Tracking number, Carrier, Invoice number,
+Amount, Paid status, Notes
+
+PO status dropdown:
+Not Ordered, Ordered, Confirmed, In Production, Shipped, Delivered,
+Delayed, Cancelled, Returned
+
+Sample POs included with tracking examples
+
+
+================================================================================
+16. TAB 13 — DELIVERY & INSTALLATION TRACKER
+================================================================================
+Columns:
+Item, Room, Vendor, Delivery address,
+Expected delivery date, Actual delivery date, Delivery status,
+Received by, Damage check, Damage notes, Storage location,
+Install date, Installer, Installation status, Punch list notes
+
+Damage check dropdown:
+Not Checked, Good Condition, Damaged, Missing Item, Wrong Item
+
+
+================================================================================
+17. TAB 14 — CLIENT APPROVAL TRACKER
+================================================================================
+Columns:
+Item/design decision, Room, Approval type,
+Sent to client date, Client response date, Status,
+Approved option, Client comments, Revision needed, Final approval date
+
+Approval types:
+Furniture, Finish, Layout, Color Palette, Budget, Purchase, Vendor,
+Design Concept
+
+Statuses:
+Not Sent, Sent, Approved, Revisions Requested, Rejected, On Hold
+
+
+================================================================================
+18. TAB 15 — PROJECT TIMELINE / GANTT TRACKER
+================================================================================
+Columns:
+Phase, Task, Assigned to, Start date, Due date, Completion date,
+Status, Priority, Dependencies, Notes,
+W1–W12 (simple week-by-week Gantt bars)
+
+Project phases:
+Consultation, Measurements, Concept Design, Sourcing, Client Approval,
+Purchasing, Construction, Delivery, Installation, Styling, Final Reveal,
+Punch List
+
+Gantt cells use teal filled blocks for active weeks
+
+
+================================================================================
+19. TAB 16 — TASK & TO-DO LIST
+================================================================================
+Columns:
+Task, Room, Category, Assigned to, Priority, Due date, Status, Notes
+
+Statuses:
+Not Started, In Progress, Waiting on Client, Waiting on Vendor,
+Complete, Delayed
+
+Categories:
+Design, Sourcing, Purchasing, Client, Vendor, Site, Installation, Admin, Other
+
+Special:
+- Overdue due-dates highlight RED when status is not Complete
+  (formula: due date < TODAY and status <> Complete)
+
+
+================================================================================
+20. TAB 17 — MEASUREMENT LOG
+================================================================================
+Columns:
+Room, Measurement type, Width, Height, Depth, Length,
+Ceiling height, Window size, Door size, Wall length, Notes
+
+Measurement types:
+Room, Wall, Window, Door, Cabinet, Furniture Space, Rug Area,
+Lighting Location
+
+
+================================================================================
+21. TAB 18 — CONTRACTOR / INSTALLER TRACKER
+================================================================================
+Columns:
+Contractor/vendor name, Trade, Contact, Scope, Quote amount,
+Start date, End date, Payment status, Insurance received,
+Contract signed, Notes
+
+Trades:
+General Contractor, Painter, Electrician, Plumber, Flooring Installer,
+Tile Installer, Wallpaper Installer, Carpenter, Window Treatment Installer,
+Furniture Installer, Cleaner, Other
+
+
+================================================================================
+22. TAB 19 — INVOICE & PAYMENT TRACKER
+================================================================================
+Columns:
+Invoice number, Invoice date, Client, Description, Amount,
+Due date, Paid date, Payment status, Payment method, Notes
+
+Payment statuses:
+Draft, Sent, Paid, Partially Paid, Overdue, Cancelled, Unpaid
+
+Formulas:
+- Total amount SUM
+- Total Paid (SUMIF status = Paid)
+- Outstanding (Sent + Partially Paid + Overdue)
+
+
+================================================================================
+23. TAB 20 — PROJECT / MEETING NOTES
+================================================================================
+Columns:
+Date, Meeting type, Attendees, Discussion points, Decisions made,
+Action items, Follow-up date, Notes
+
+Meeting types:
+Client Consultation, Vendor Meeting, Site Visit, Installation Meeting,
+Contractor Meeting, Final Walkthrough
+
+
+================================================================================
+24. PRINTABLE REPORT TABS (21–25)
+================================================================================
+21 Client FF&E Report
+   - Client-facing item list with costs and approval status
+   - Landscape print layout, totals row
+
+22 Room Budget Report
+   - Linked formulas from Room List
+   - Budget / estimated / actual / remaining / % used
+   - Portrait print layout
+
+23 Vendor Order Report
+   - Linked formulas from Purchase Orders
+   - Landscape print layout
+
+24 Install Checklist
+   - Checkbox column, item, room, vendor, install date, installer, status
+   - Site-day printable
+
+25 Punch List
+   - Checkbox, #, issue, room, responsible, priority, due, status, resolution
+   - Final walkthrough printable
+
+
+================================================================================
+25. DROPDOWN MENUS (DATA VALIDATION)
+================================================================================
+Applied across sheets for:
+- Room / Room type / Room names
+- FF&E Category
+- Vendor names / Vendor type
+- Order status / PO status
+- Approval status / Approval type
+- Delivery status
+- Install status
+- Priority
+- Payment status
+- Project type / Project status
+- Billing method
+- Yes/No
+- Design status
+- Fixture type
+- Finish type / Surface
+- Budget category
+- Damage check
+- Project phase
+- Task status / Task category
+- Measurement type
+- Trade
+- Meeting type
+- Preferred sourcing option
+
+All option lists also stored on hidden "Lists" sheet for easy customization.
+
+
+================================================================================
+26. AUTO-CALCULATIONS (FORMULAS)
+================================================================================
+Master FF&E:
+  Total Cost  = Quantity × Unit Cost
+  Final Cost  = Total + Tax + Shipping − Discount
+
+Room List:
+  Estimated Spend = SUMIF(FF&E by room, Final Cost)
+  Actual Spend    = SUMIFS(FF&E by room, status <> Cancelled)
+  Remaining       = Budget Allocation − Actual Spend
+
+Fixtures / Finishes:
+  Total Cost = Quantity × Unit Cost
+
+Budget:
+  Difference   = Budgeted − Actual
+  Balance Due  = Actual − Paid
+  Category estimates linked to FF&E / Client Profile where applicable
+  Summary totals and paid %
+
+Dashboard:
+  All KPIs are live COUNTIF / SUMIF / COUNTA / cross-sheet references
+
+Invoices:
+  Total, Total Paid, Outstanding
+
+Reports:
+  Room budget and vendor order reports pull live linked values
+
+All formula cells are LOCKED + soft-blue styled.
+
+
+================================================================================
+27. CONDITIONAL FORMATTING
+================================================================================
+Status-based colors (search rules):
+  GREEN  = Complete / Approved / Delivered / Installed / Paid /
+           Good Condition / Yes
+  YELLOW = Pending / In Progress / Sent / Client Review / Ordered /
+           Shipped / Scheduled / Partially Paid / Waiting / Sourcing /
+           Confirmed / In Production / In Transit
+  RED    = Overdue / Delayed / Rejected / Damaged / Missing / Wrong /
+           Backordered / Urgent
+  GRAY   = Cancelled / On Hold / Not Started / Not Sent / Draft / Not Ordered
+
+Numeric:
+  Remaining budget / budget difference: red if < 0, green if >= 0
+  To-Do due dates: red when overdue and not Complete
+
+
+================================================================================
+28. FILTERS, FREEZE PANES, PRINT
+================================================================================
+- AutoFilter on every major schedule
+- Freeze panes below header row
+- Print titles / landscape or portrait set on report tabs
+- Fit-to-width on key printable sheets
+- Page margins + branded footer
+
+
+================================================================================
+29. SAMPLE DATA INCLUDED
+================================================================================
+Demo project: "Chen Residence Refresh"
+- Client: Alexandra Chen
+- Budget: $85,000
+- Designer: Jordan Blake Studio
+- 6 rooms
+- 15 Master FF&E items
+- 10 vendors
+- Purchase orders, deliveries, approvals, timeline tasks, to-dos,
+  measurements, contractors, invoices, meeting notes
+- Replace sample rows with real project data to start a new job
+
+
+================================================================================
+30. COMPATIBILITY
+================================================================================
+- Microsoft Excel 2016+ (Windows / Mac) — FULL support (recommended)
+- Excel Online — good support
+- Google Sheets — open via Drive upload; formulas/filters/dropdowns work;
+  charts may need slight reposition; sheet protection differs
+- LibreOffice Calc — basic open support
+
+File type: standard Office Open XML (.xlsx)
+
+
+================================================================================
+31. HOW TO START A NEW PROJECT
+================================================================================
+1. File → Save As → name for new client
+2. Keep header rows; clear or overwrite sample data rows
+3. Update 03 Client Profile first (gold cells)
+4. Fill 04 Room List
+5. Enter items on 05 Master FF&E (and/or 06–08)
+6. Track budget, POs, approvals, delivery as project runs
+7. Use 02 Dashboard for overview; print 21–25 for client/site packs
+
+
+================================================================================
+32. HOW TO CUSTOMIZE DROPDOWNS
+================================================================================
+1. Unprotect sheet if needed (password: premium)
+2. Unhide "Lists" sheet (right-click any tab → Unhide)
+3. Edit values in the relevant Lists column
+4. Update data validation ranges on sheets if you add many new values
+5. Re-protect sheets
+
+
+================================================================================
+33. PYTHON GENERATOR
+================================================================================
+Source file: create_ffe_spreadsheet.py
+Dependencies: openpyxl >= 3.1.0
+Python: 3.8+
+
+Regenerate workbook:
+  python3 -m venv .venv
+  source .venv/bin/activate          # Windows: .venv\Scripts\activate
+  pip install -r requirements.txt
+  python create_ffe_spreadsheet.py
+
+Output:
+  Interior_Design_FFE_Project_Tracker.xlsx
+
+Constants at top of script (easy to change):
+  AUTHOR = "Novality store"
+  PROTECT_PASSWORD = "premium"
+  Color palette hex values
+  All dropdown option lists
+  Sample data arrays
+
+
+================================================================================
+34. SELLING / PREMIUM HIGHLIGHTS (MARKETING BULLETS)
+================================================================================
+- 25+ professional tabs covering full interior design workflow
+- Live Project Dashboard with KPI cards and charts
+- Complete Master FF&E schedule with auto cost math
+- Separate Furniture, Fixtures, and Finishes schedules
+- Product sourcing comparison (3 options)
+- Vendor database with trade discounts
+- Budget tracker with variance and paid balance
+- Purchase order + delivery + install tracking
+- Client approval workflow
+- Timeline with simple Gantt
+- Daily to-do with overdue alerts
+- Measurement log, contractor tracker, invoices, meeting notes
+- 5 printable client/site report tabs
+- Dropdown menus everywhere that matters
+- Conditional formatting (green / yellow / red / gray)
+- Filters and freeze panes on all major sheets
+- Formula cells locked (password: premium) — fool-proof for end users
+- Excel + Google Sheets compatible .xlsx
+- Beautiful Novality store premium branding
+- Sample project data so the file demos immediately
+- Fully regenerable from Python source for white-label updates
+
+
+================================================================================
+35. FILE PACKAGE CONTENTS
+================================================================================
+create_ffe_spreadsheet.py     Python generator (full source)
+requirements.txt              pip dependencies (openpyxl)
+FEATURES.txt                  This feature specification
+HOW_TO_RUN.txt                Fool-proof setup & run guide
+README.md                     Short product readme
+Interior_Design_FFE_Project_Tracker.xlsx   Generated workbook
+.gitignore                    Ignores .venv / cache
+
+
+================================================================================
+END OF FEATURE SPECIFICATION
+© Novality store — Interior Design FF&E Project Tracker
+================================================================================

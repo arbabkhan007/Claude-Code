@@ -1,0 +1,145 @@
+================================================================================
+  HOW TO RUN — Interior Design FF&E Project Tracker Generator
+  by Novality store
+  Fool-proof setup guide
+================================================================================
+
+WHAT YOU NEED
+-------------
+- Python 3.8 or newer (3.10 / 3.11 / 3.12 recommended)
+- Internet once (to install openpyxl)
+- Windows, macOS, or Linux
+
+
+QUICK START (copy-paste)
+------------------------
+
+--- macOS / Linux ---
+  cd interior-design-ffe-tracker
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  python create_ffe_spreadsheet.py
+
+--- Windows (Command Prompt) ---
+  cd interior-design-ffe-tracker
+  py -3 -m venv .venv
+  .venv\Scripts\activate.bat
+  pip install -r requirements.txt
+  python create_ffe_spreadsheet.py
+
+--- Windows (PowerShell) ---
+  cd interior-design-ffe-tracker
+  py -3 -m venv .venv
+  .venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  python create_ffe_spreadsheet.py
+
+
+RESULT
+------
+A file is created in the same folder:
+  Interior_Design_FFE_Project_Tracker.xlsx
+
+Open it in Microsoft Excel (best) or upload to Google Drive → Open with Sheets.
+
+
+ONE-LINE INSTALL (if you already have a venv active)
+----------------------------------------------------
+  pip install openpyxl>=3.1.0
+  python create_ffe_spreadsheet.py
+
+
+REQUIREMENTS FILE (requirements.txt)
+------------------------------------
+  openpyxl>=3.1.0
+
+
+IF SOMETHING FAILS
+------------------
+1) "python3: command not found"
+   - Install Python from https://www.python.org/downloads/
+   - On Windows try: py -3 create_ffe_spreadsheet.py
+
+2) "No module named openpyxl"
+   - Activate the venv first, then: pip install openpyxl
+
+3) "externally-managed-environment"
+   - Always use a venv (steps above). Do not pip install system-wide.
+
+4) Permission / path errors
+   - cd into the folder that contains create_ffe_spreadsheet.py
+   - Confirm with: dir   (Windows)   or   ls   (Mac/Linux)
+
+5) Excel says file is locked / protected
+   - That is intentional. Password: premium
+   - Review → Unprotect Sheet → premium
+
+
+CUSTOMIZE BEFORE GENERATING
+---------------------------
+Open create_ffe_spreadsheet.py in any text editor and edit near the top:
+
+  AUTHOR = "Novality store"          # your brand name
+  PROTECT_PASSWORD = "premium"       # sheet unlock password
+
+  # Color palette hex codes (NAVY, TEAL, GOLD, ...)
+  # Dropdown lists (ROOM_TYPES, FFE_CATEGORIES, ...)
+  # SAMPLE_ROOMS / SAMPLE_FFE / SAMPLE_VENDORS for demo data
+
+Then run the script again. It overwrites the .xlsx.
+
+
+OPENING THE WORKBOOK
+--------------------
+Excel:
+  Double-click the .xlsx file
+  If Protected View appears: Enable Editing
+  Dropdowns and filters work immediately
+  Formula cells (soft blue) cannot be typed over
+  To change formulas: Unprotect Sheet with password premium
+
+Google Sheets:
+  Upload .xlsx to Google Drive
+  Right-click → Open with → Google Sheets
+  Formulas and dropdowns transfer
+  Sheet protection behavior differs from Excel
+
+
+STARTING A NEW CLIENT PROJECT
+-----------------------------
+1. Save As a new file name
+2. Edit 03 Client Profile (gold cells)
+3. Replace sample rooms / FF&E / vendors
+4. Keep header row 4 on schedule tabs
+5. Do not delete formula columns (P Total Cost, T Final Cost, etc.)
+
+
+SHEET PROTECTION PASSWORD
+-------------------------
+  premium
+
+Author:
+  Novality store
+
+
+REGENERATE CLEAN MASTER TEMPLATE
+--------------------------------
+Run the Python script any time you want a fresh branded master file
+with sample data restored.
+
+
+FILES IN THIS FOLDER
+--------------------
+  create_ffe_spreadsheet.py     ← full Python source (generator)
+  requirements.txt              ← pip dependency list
+  FEATURES.txt                  ← complete feature specification
+  HOW_TO_RUN.txt                ← this file
+  README.md                     ← short product readme
+  Interior_Design_FFE_Project_Tracker.xlsx  ← generated spreadsheet
+  .gitignore                    ← ignores .venv
+
+
+================================================================================
+© Novality store
+================================================================================
